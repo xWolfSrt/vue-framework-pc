@@ -36,7 +36,26 @@ const routes = [
         children: [
             { path: '', component: () => import('@/views/work/WorkHome.vue') },
             { path: 'search', component: () => import('@/views/work/WorkSearch.vue') },
+            { path: 'notification', component: () => import('@/views/work/notification/WorkNotification.vue') },
         ],
+    },
+    {
+        path: '/contact',
+        component: () => import('@/views/contact/Contact.vue'),
+        // children: [
+        //     { path: '', component: () => import('@/views/work/WorkHome.vue') },
+        //     { path: 'search', component: () => import('@/views/work/WorkSearch.vue') },
+        //     { path: 'notification', component: () => import('@/views/work/notification/WorkNotification.vue') },
+        // ],
+    },
+    {
+        path: '/schedule',
+        component: () => import('@/views/schedule/Schedule.vue'),
+        // children: [
+        //     { path: '', component: () => import('@/views/work/WorkHome.vue') },
+        //     { path: 'search', component: () => import('@/views/work/WorkSearch.vue') },
+        //     { path: 'notification', component: () => import('@/views/work/notification/WorkNotification.vue') },
+        // ],
     },
     {
         path: '/home',

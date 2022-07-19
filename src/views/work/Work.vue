@@ -26,8 +26,13 @@
                 <TabManager :tabs="workService.tabs" @close-tab="closeTabClick"></TabManager>
             </div>
             <div class="router-content">
-                <!-- <router-outlet></router-outlet> -->
-                <router-view></router-view>
+                <router-view v-slot="{ Component, route }">
+                    <!-- <component :is="Component" :key="route.fullPath" /> -->
+                    <keep-alive :include="workService.keepAlive">
+                        <component :is="Component" :key="route.fullPath" />
+                    </keep-alive>
+                </router-view>
+                <!-- <router-view></router-view> -->
             </div>
         </div>
     </div>
@@ -43,6 +48,8 @@ import { useRouter, onBeforeRouteLeave } from 'vue-router'
 import { workStore } from '../../store/work-store'
 import getAssetsFile from '../../utils/pub-use'
 import { ElMessage } from 'element-plus'
+
+// const keepAlive = reactive(['WorkHome'])
 
 const { proxy } = getCurrentInstance()
 const router = useRouter()

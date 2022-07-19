@@ -2,10 +2,16 @@ import { defineStore } from 'pinia'
 import getAssetsFile from '../utils/pub-use'
 const defaultTab = '/work'
 const modules = [
-    { name: '首页', code: 'work', icon: getAssetsFile('work/home/icon_tab_work.png'), page: '/work', fixed: true }, //fixed为true,则不允许删除
+    { name: '首页', code: 'work', icon: getAssetsFile('work/home/icon_tab_work.png'), page: '/work', component: 'WorkHome', fixed: true }, //fixed为true,则不允许删除
     { name: '搜索', code: 'search', icon: getAssetsFile('work/home/icon_tab_search.png'), page: '/work/search' },
     { name: '待办事项详情', code: 'schedule', icon: getAssetsFile('work/home/icon_tab_dbsx.png'), page: '/work/schedule' },
-    { name: '通知公告', code: 'notification', icon: getAssetsFile('work/home/icon_tab_tzgg.png'), page: '/work/notification' },
+    {
+        name: '通知公告',
+        code: 'notification',
+        icon: getAssetsFile('work/home/icon_tab_tzgg.png'),
+        page: '/work/notification',
+        component: 'WorkNotification',
+    },
     { name: '问卷调查', code: 'question', icon: getAssetsFile('work/home/icon_tab_wjdc.png'), page: '/work/question' },
     { name: '投票调查', code: 'vote', icon: getAssetsFile('work/home/icon_tab_tpdc.png'), page: '/work/vote' },
     { name: '会议会务', code: 'meeting', icon: getAssetsFile('work/home/icon_tab_hyhw.png'), page: '/work/meeting' },
@@ -23,7 +29,15 @@ export const workStore = defineStore('work', {
             pageCallback: undefined,
         }
     },
-    getters: {},
+    getters: {
+        keepAlive(state) {
+            let keep = state.tabs.map((item) => {
+                return item.component
+            })
+            console.log('~~~~~~~~~~~~~~~~~~~~~~', keep)
+            return keep
+        },
+    },
     actions: {
         addTab(url) {
             let page = url.indexOf('?') != -1 ? url.substring(0, url.indexOf('?')) : url

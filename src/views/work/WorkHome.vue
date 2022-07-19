@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container" v-loading="data.isReloading">
         <div class="left">
             <div class="chart-container">
                 <div class="chart-header">
@@ -49,7 +49,7 @@
                 <span>待办事项</span>
                 <span v-if="data.totalCount">（{{ data.totalCount }}）</span>
             </div>
-            <div class="right-list" v-if="!data.noData" v-infinite-scroll="onReachBottom" infinite-scroll-distance="50">
+            <div class="right-list" v-if="!data.noData">
                 <div class="right-item" v-for="(item, index) in data.list" :key="index" @click="itemClick(index)">
                     <span>{{ item.category }}</span>
                     <div>
@@ -78,7 +78,7 @@
 <script setup>
 import { ElMessage } from 'element-plus'
 import { ArrowDown } from '@element-plus/icons-vue'
-import { ref, reactive, getCurrentInstance, onMounted } from 'vue'
+import { ref, reactive, getCurrentInstance, onMounted, onDeactivated, onActivated } from 'vue'
 import getAssetsFile from '../../utils/pub-use'
 import homeService from '../../api/home'
 import sendService from '../../api/send'
@@ -167,6 +167,7 @@ const data = reactive({
 })
 const temp = {}
 let isOnInit = false
+const isActived = ref(false)
 const setPageCallback = () => {
     console.log(proxy.$router)
     workService.setPageCallback(proxy.$router.currentRoute.value.path, {
@@ -183,6 +184,14 @@ const setPageCallback = () => {
     //     },
     // })
 }
+onActivated(() => {
+    console.log('WorkHome---onActivated')
+    isActived.value = true
+})
+onDeactivated(() => {
+    console.log('WorkHome---onDeactivated')
+    isActived.value = false
+})
 onMounted(() => {
     console.log('WorkHome---onMounted')
     setPageCallback()
@@ -228,6 +237,7 @@ const isLogin = () => {
 const reloadFull = () => {
     temp.refreshMode = 1
     // this.zwPopup.showLoading()
+    data.isReloading = true
     resetFilterDay()
 
     homeService
@@ -349,6 +359,7 @@ const reloadFinish = () => {
     data.isReloadingSchedule = false
     setTimeout(() => {
         // this.zwPopup.hideLoading()
+        data.isReloading = false
     }, 300)
 }
 
@@ -360,6 +371,7 @@ const reloadSchedule = () => {
     loadSchedule({ start: 0 })
 }
 const onReachBottom = () => {
+    // 使用v-infinite-scroll时，会在keep-alive中报错
     console.log('onReachBottom')
     //正在加载更多且当前已达最大数量则不再加载
     if (data.isReloadingSchedule || data.isLoadingMore || data.list.length >= data.totalCount) return
