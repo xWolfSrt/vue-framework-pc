@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 import Splash from '@/views/Splash.vue'
+import pinia from '../store'
 import { workStore } from '../store/work-store'
 const routes = [
     { path: '/', redirect: '/splash' },
@@ -79,10 +80,10 @@ const router = createRouter({
     // history: createWebHistory('/'),
 })
 
-// const workService = workStore()
+const workService = workStore(pinia) //传入pinia 解决afterEach中不能使用的问题
 router.afterEach((to, from) => {
     // if (to.path.indexOf('/work') != -1) {
-    workStore().addTab(to.path)
+    workService.addTab(to.path)
     // }
 })
 export default router

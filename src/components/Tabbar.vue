@@ -199,7 +199,6 @@ const confirmLoginOut = () => {
         .catch((err) => {
             console.log(err)
             ElMessage.error(err.msg || '退出登录失败')
-            hideLoading()
         })
 }
 const disposeLoginOut = () => {

@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <Tabbar :code="'work'"></Tabbar>
+    <Tabbar :code="'work'" @refresh="tabbarRefresh"></Tabbar>
 </template>
 <script setup>
 import { ref, reactive, getCurrentInstance, onMounted } from 'vue'
@@ -42,10 +42,12 @@ import TabManager from '../../components/TabManager.vue'
 import { useRouter, onBeforeRouteLeave } from 'vue-router'
 import { workStore } from '../../store/work-store'
 import getAssetsFile from '../../utils/pub-use'
+import { ElMessage } from 'element-plus'
 
 const { proxy } = getCurrentInstance()
 const router = useRouter()
 const workService = workStore()
+const confirmSearch = ref('')
 const inputEnable = ref(true)
 const input = reactive({
     content: '',
@@ -56,9 +58,25 @@ const data = reactive({
 onMounted(() => {
     console.log(router)
 })
-
+const tabbarRefresh = () => {
+    workService.refreshPage(router.currentRoute.value.path)
+}
+const refreshClick = () => {
+    workService.refreshPage(router.currentRoute.value.path)
+}
 const search = () => {
     console.log('search')
+    if (!input.content && input.content != '0') {
+        ElMessage.warning('请输入搜索内容')
+        return
+    }
+    confirmSearch.value = input.content
+    proxy.$storage.set('workConfirmSearchContent', confirmSearch.value)
+    if (router.currentRoute.value.path == '/work/search') {
+        workService.searchContent(confirmSearch.value, router.currentRoute.value.path)
+    } else {
+        router.push('/work/search')
+    }
 }
 onBeforeRouteLeave((to, from) => {
     // const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
@@ -67,7 +85,7 @@ onBeforeRouteLeave((to, from) => {
 })
 
 const closeTabClick = (index) => {
-    workService.closeTab(index)
+    workService.closeTab(index, router)
 }
 </script>
 <style lang="scss" scoped>

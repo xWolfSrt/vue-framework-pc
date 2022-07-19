@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import getAssetsFile from '../utils/pub-use'
-import { useRouter } from 'vue-router'
 const defaultTab = '/work'
 const modules = [
     { name: '首页', code: 'work', icon: getAssetsFile('work/home/icon_tab_work.png'), page: '/work', fixed: true }, //fixed为true,则不允许删除
@@ -15,8 +14,6 @@ const modules = [
     { name: '文件共享', code: 'file', icon: getAssetsFile('work/home/icon_tab_wjgx.png'), page: '/work/file' },
     { name: '群组设置', code: 'group', icon: getAssetsFile('work/home/icon_tab_qzsz.png'), page: '/work/group' },
 ]
-
-const router = useRouter()
 
 export const workStore = defineStore('work', {
     state: () => {
@@ -59,7 +56,7 @@ export const workStore = defineStore('work', {
             }
             return this.tabs
         },
-        closeTab(index) {
+        closeTab(index, router) {
             let tab = this.tabs[index]
             let isLast = index == this.tabs.length - 1
             let isSelected = tab.selected
@@ -99,10 +96,8 @@ export const workStore = defineStore('work', {
                 callback: callback,
             }
         },
-        refreshPage() {
+        refreshPage(currentUrl) {
             if (this.pageCallback && this.pageCallback.callback) {
-                //FIXME path fullPath
-                let currentUrl = router.currentRoute.value.path
                 console.log(currentUrl)
                 console.log(this.pageCallback.url)
 
@@ -111,9 +106,8 @@ export const workStore = defineStore('work', {
                 }
             }
         },
-        searchContent(content) {
+        searchContent(content, currentUrl) {
             if (this.pageCallback && this.pageCallback.callback && this.pageCallback.callback.search) {
-                let currentUrl = router.currentRoute.value.path
                 console.log(currentUrl)
                 console.log(this.pageCallback.url)
                 if (currentUrl == this.pageCallback.url) {

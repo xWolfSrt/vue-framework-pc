@@ -29,6 +29,10 @@ const initHost = () => {
 }
 </script>
 <style lang="scss">
+#app {
+    width: 100%;
+    height: 100vh;
+}
 .view-enter-active {
     animation: view-ani var(--el-transition-duration);
 }

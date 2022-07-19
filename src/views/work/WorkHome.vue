@@ -5,24 +5,23 @@
                 <div class="chart-header">
                     <div></div>
                     <span>统计信息</span>
-                    <!-- <div class="filter">
-                    <a nz-dropdown nzTrigger="click" [nzDropdownMenu]="categorymenu">
-                        {{ selectedDay.name }}
-                        <i nz-icon nzType="caret-down"></i>
-                    </a>
-                    <nz-dropdown-menu #categorymenu="nzDropdownMenu">
-                        <ul nz-menu>
-                            <li
-                                nz-menu-item
-                                *ngFor="let item of filterDays; let i = index"
-                                (click)="filterDayClick(i)"
-                                [nzSelected]="item.selected"
-                            >
-                                {{ item.name }}
-                            </li>
-                        </ul>
-                    </nz-dropdown-menu>
-                </div> -->
+                    <div class="filter">
+                        <el-dropdown @command="filterDayClick">
+                            <span class="el-dropdown-link">
+                                {{ data.selectedDay.name }}
+                                <el-icon class="el-icon--right">
+                                    <arrow-down />
+                                </el-icon>
+                            </span>
+                            <template #dropdown>
+                                <el-dropdown-menu>
+                                    <el-dropdown-item v-for="(item, index) in data.filterDays" :key="index" :command="index">{{
+                                        item.name
+                                    }}</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
+                    </div>
                 </div>
                 <div id="work_home_chart" class="chart"></div>
             </div>
@@ -44,54 +43,51 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="right">
-        <div class="right-header">
-            <div></div>
-            <span>待办事项</span>
-            <span *ngIf="totalCount">（{{ totalCount }}）</span>
-        </div>
-        <div
-            class="right-list"
-            *ngIf="!noData"
-            infiniteScroll
-            [infiniteScrollDistance]="1"
-            [alwaysCallback]="true"
-            [scrollWindow]="false"
-            (scrolled)="onReachBottom()"
-        >
-            <div class="right-item" *ngFor="let item of list; let i = index" (click)="itemClick(i)">
-                <span>{{ item.category }}</span>
-                <div>
-                    <span>{{ item.name }}</span>
-                    <span>发布单位：{{ item.agent }}</span>
-                    <span>发布日期：{{ item.time }}</span>
-                    <span>查看</span>
+        <div class="right">
+            <div class="right-header">
+                <div></div>
+                <span>待办事项</span>
+                <span v-if="data.totalCount">（{{ data.totalCount }}）</span>
+            </div>
+            <div class="right-list" v-if="!data.noData" v-infinite-scroll="onReachBottom" infinite-scroll-distance="50">
+                <div class="right-item" v-for="(item, index) in data.list" :key="index" @click="itemClick(index)">
+                    <span>{{ item.category }}</span>
+                    <div>
+                        <span>{{ item.name }}</span>
+                        <span>发布单位：{{ item.agent }}</span>
+                        <span>发布日期：{{ item.time }}</span>
+                        <span>查看</span>
+                    </div>
                 </div>
+                <div class="reloading" v-if="data.isReloadingSchedule">
+                    <img :src="getAssetsFile('icon_loading_circle.gif')" style="width: 1.875rem; height: 1.875rem" />
+                </div>
+                <div class="loadingMore" v-if="data.isLoadingMore">
+                    <img :src="getAssetsFile('icon_loading_circle.gif')" />
+                    <span>正在加载...</span>
+                </div>
+                <div class="nomore" v-if="data.isNoMoreShow">已无更多</div>
             </div>
-            <div class="reloading" *ngIf="isReloadingSchedule">
-                <img [src]="spa('icon_loading_circle.gif')" style="width: 1.875rem; height: 1.875rem" />
+            <div class="none" v-if="data.noData">
+                <img :src="getAssetsFile('common/icon_data_empty.png')" />
+                <span>暂无相关数据</span>
             </div>
-            <div class="loadingMore" *ngIf="isLoadingMore">
-                <img [src]="spa('icon_loading_circle.gif')" />
-                <span>正在加载...</span>
-            </div>
-            <div class="nomore" *ngIf="isNoMoreShow">已无更多</div>
         </div>
-        <div class="none" *ngIf="noData">
-            <img [src]="spa('common/icon_data_empty.png')" />
-            <span>暂无相关数据</span>
-        </div>
-    </div> -->
     </div>
 </template>
 <script setup>
 import { ElMessage } from 'element-plus'
+import { ArrowDown } from '@element-plus/icons-vue'
 import { ref, reactive, getCurrentInstance, onMounted } from 'vue'
 import getAssetsFile from '../../utils/pub-use'
 import homeService from '../../api/home'
-import { result } from 'lodash'
+import sendService from '../../api/send'
+import receiveService from '../../api/receive'
 import dateService from '../../utils/date-service'
+import { workStore } from '../../store/work-store'
+import { result } from 'lodash'
 const { proxy } = getCurrentInstance()
+const workService = workStore()
 
 const modules = reactive([
     {
@@ -170,9 +166,31 @@ const data = reactive({
     webSocketChannel: undefined,
 })
 const temp = {}
+let isOnInit = false
+const setPageCallback = () => {
+    console.log(proxy.$router)
+    workService.setPageCallback(proxy.$router.currentRoute.value.path, {
+        refresh: (result) => {
+            console.log('WorkHome--PageCallback--refresh')
+            reloadFull()
+        },
+    })
+
+    // this.receiveService.addReadListener(this.router.url, {
+    //     refresh: (result) => {
+    //         console.log('WorkHome--addRead--refresh')
+    //         this.reloadFull()
+    //     },
+    // })
+}
 onMounted(() => {
+    console.log('WorkHome---onMounted')
+    setPageCallback()
     initChart([], [], [])
     reloadFull()
+    // startChatWebSocket()
+    addChartOnResizeListener()
+    isOnInit = true
 })
 const moduleClick = (item) => {
     if (!item.page) {
@@ -236,10 +254,10 @@ const resetFilterDay = () => {
     data.selectedDay = { name: '近7天', value: 7, selected: true }
 }
 const disposeWaitList = (result) => {
-    let data = result.receiveUnsubmitPagerResult
+    let _data = result.receiveUnsubmitPagerResult
 
-    let count = data && data.count
-    let value = (data && data.list) || []
+    let count = _data && _data.count
+    let value = (_data && _data.list) || []
     let newList = data.list
     if (temp.refreshMode == 1 || temp.refreshMode == 2) newList = []
     let isNoMoreShow = false
@@ -255,6 +273,8 @@ const disposeWaitList = (result) => {
     data.isReloadingSchedule = false
     data.isLoadingMore = false
     data.isNoMoreShow = isNoMoreShow
+
+    console.log(data.list)
 }
 
 const getList = (value) => {
@@ -292,8 +312,8 @@ const disposeUnreadCount = (result) => {
         })
 
     modules.forEach((module) => {
-        let data = map[module.code]
-        module.notify = (data && data.count > 0) || false
+        let _data = map[module.code]
+        module.notify = (_data && _data.count > 0) || false
     })
 }
 const disposeChartData = (result) => {
@@ -331,11 +351,105 @@ const reloadFinish = () => {
         // this.zwPopup.hideLoading()
     }, 300)
 }
+
+const reloadSchedule = () => {
+    temp.refreshMode = 2
+
+    data.isReloadingSchedule = true
+    temp.startNum = 0
+    loadSchedule({ start: 0 })
+}
+const onReachBottom = () => {
+    console.log('onReachBottom')
+    //正在加载更多且当前已达最大数量则不再加载
+    if (data.isReloadingSchedule || data.isLoadingMore || data.list.length >= data.totalCount) return
+    loadMoreSchedule()
+}
+const loadMoreSchedule = () => {
+    temp.refreshMode = 3
+    temp.startNum = data.list.length
+    loadSchedule()
+}
+const loadSchedule = (config) => {
+    let isReloading = config && config.start == 0
+
+    //如果是重新加载且当前正在reload,则取消之前的请求
+    // if (isReloading && this.isReloading && this.temp.requestTask) {
+    //   this.temp.requestTask.abort();
+    // }
+    data.isReloadingSchedule = isReloading
+    data.isLoadingMore = !isReloading
+    if (isReloading) {
+        // this.list = []
+        data.isNoMoreShow = false
+        data.totalCount = 0
+        data.noData = false
+    }
+
+    let account = proxy.$storage.get('currentAccount')
+    let selectedOrganization = proxy.$storage.get('selectedOrganization')
+
+    let lambda = `!item.getSubmit()&&item.getCategoryInfo().getCode() != "ReceiveCategory_Membership" &&item.getOrganizationInfo().getId()=="${selectedOrganization.id}" &&item.getAccount()=="${account.account}"`
+
+    let pager = {
+        start: isReloading ? 0 : data.list.length,
+        limit: 10,
+        filter: `sql->sql.where(item-> ${lambda})`,
+        navigations: ['sendInfo.scheduleInfo.categoryInfo'],
+        sorter: 'sql->sql.orderby(item->item.getSendInfo().getTimestamp(),false)',
+    }
+
+    receiveService
+        .queryList(pager)
+        .then((result) => {
+            if (!result) {
+                queryFinish(true)
+                return
+            }
+            let count = result.count
+            let value = result.list || []
+            let newList = data.list
+            if (temp.refreshMode == 1 || temp.refreshMode == 2) newList = []
+            let isNoMoreShow = false
+
+            if (value.length > 0) Array.prototype.push.apply(newList, getList(value))
+
+            //当前列表数量超过一页,且等于最大数量则显示已无更多
+            if (newList.length >= 10 && newList.length >= count) isNoMoreShow = true
+
+            data.noData = newList.length == 0
+            data.list = newList
+            data.totalCount = count
+            data.isReloadingSchedule = false
+            data.isLoadingMore = false
+            data.isNoMoreShow = isNoMoreShow
+            queryFinish()
+        })
+        .catch((err) => {
+            queryFinish(true, error)
+        })
+}
+const queryFinish = (isError = false, errMsg) => {
+    console.log('queryFinish', temp.refreshMode)
+    switch (temp.refreshMode) {
+        case 1:
+        // if (isError) {
+        //     this.zwLoading.showError()
+        // } else {
+        //     this.zwLoading.hide()
+        // }
+        case 2:
+            data.isReloadingSchedule = false
+            data.noData = !data.list || data.list.length == 0
+            break
+        case 3:
+            data.isLoadingMore = false
+            break
+    }
+}
+
 let myChart
 const initChart = (name, data1, data2) => {
-    console.log(name)
-    console.log(data1)
-    console.log(data2)
     try {
         let _myChart = myChart
         if (!myChart) {
@@ -468,6 +582,46 @@ const initChart = (name, data1, data2) => {
         console.log('initChart err', err)
     }
 }
+
+const filterDayClick = (i) => {
+    let item = data.filterDays[i]
+    if (data.selectedDay.value == item.value) return
+    data.filterDays.forEach((item, index) => {
+        item.selected = i == index
+    })
+    data.selectedDay = JSON.parse(JSON.stringify(data.filterDays[i]))
+    refresh()
+}
+
+const refresh = () => {
+    sendService
+        .listSendStatisticsView(data.selectedDay.value)
+        .then((result) => {
+            if (!result) {
+                return
+            }
+            disposeStatisticsResult(result)
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+}
+
+const disposeStatisticsResult = (result) => {
+    disposeChartData(result)
+}
+const refreshChart = () => {
+    myChart && myChart.resize()
+    addChartOnResizeListener()
+}
+
+const addChartOnResizeListener = () => {
+    setTimeout(() => {
+        window.onresize = () => {
+            myChart && myChart.resize()
+        }
+    }, 200)
+}
 </script>
 <style lang="scss" scoped>
 .container {
@@ -523,13 +677,20 @@ const initChart = (name, data1, data2) => {
                     min-width: 6.4rem;
                     margin-left: 1rem;
 
-                    a {
-                        font-size: 0.875rem;
-                        color: #6c78af;
-                    }
+                    // a {
+                    //     font-size: 0.875rem;
+                    //     color: #6c78af;
+                    // }
 
-                    i {
-                        color: #caccd8;
+                    // i {
+                    //     color: #caccd8;
+                    // }
+
+                    .el-dropdown-link {
+                        cursor: pointer;
+                        color: var(--el-color-primary);
+                        display: flex;
+                        align-items: center;
                     }
                 }
             }
