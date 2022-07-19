@@ -68,7 +68,10 @@ import tabbarService from '../utils/tabbar-service'
 import userService from '../api/user'
 import { ElMessage } from 'element-plus'
 import { Check, Close } from '@element-plus/icons-vue'
+import { workStore } from '../store/work-store'
+
 const { proxy } = getCurrentInstance()
+const workService = workStore()
 
 const currentCode = ref('')
 
@@ -122,6 +125,7 @@ const tabClick = (code) => {
     console.log(code)
     if (code == currentCode.value) {
         emits && emits('refresh')
+        console.log(workService.getTabs())
     } else {
         let path
         data.tabs.forEach((tab) => {
@@ -131,7 +135,7 @@ const tabClick = (code) => {
                 //判断上一次选择的标签页，如果存在，则跳转到上一次的标签页，否则跳转到首页
                 switch (code) {
                     case 'work':
-                        path = getLastSelectedTab(this.workService.getTabs(), tab)
+                        path = getLastSelectedTab(workService.getTabs(), tab)
                         break
                     case 'business':
                         path = getLastSelectedTab(this.businessService.getTabs(), tab)
@@ -151,6 +155,7 @@ const tabClick = (code) => {
 }
 
 const getLastSelectedTab = (tabs, current) => {
+    console.log(tabs)
     let tab
     tabs &&
         tabs.forEach((item) => {

@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 import Splash from '@/views/Splash.vue'
-
+import { workStore } from '../store/work-store'
 const routes = [
     { path: '/', redirect: '/splash' },
     { path: '/splash', component: Splash },
@@ -32,6 +32,10 @@ const routes = [
     {
         path: '/work',
         component: () => import('@/views/work/Work.vue'),
+        children: [
+            { path: '', component: () => import('@/views/work/WorkHome.vue') },
+            { path: 'search', component: () => import('@/views/work/WorkSearch.vue') },
+        ],
     },
     {
         path: '/home',
@@ -75,4 +79,10 @@ const router = createRouter({
     // history: createWebHistory('/'),
 })
 
+// const workService = workStore()
+router.afterEach((to, from) => {
+    // if (to.path.indexOf('/work') != -1) {
+    workStore().addTab(to.path)
+    // }
+})
 export default router

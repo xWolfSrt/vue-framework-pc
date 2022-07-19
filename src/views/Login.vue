@@ -175,14 +175,16 @@ function countDownStart() {
     countDownText.value = 60
     timer = setInterval(() => {
         countDownText.value--
-        console.log(countDownText)
+        console.log(countDownText.value)
         if (countDownText.value === 0) {
-            clearInterval(timer)
+            countDownStop()
             captchaConfig.counting = false
         }
     }, 1000)
 }
-
+function countDownStop() {
+    clearInterval(timer)
+}
 function login() {
     if (!phone.value) {
         ElMessage.error('手机号码不能为空')
@@ -270,6 +272,7 @@ function getOrganizationList() {
 }
 function registerSuccess() {
     hideLoading()
+    countDownStop()
     ElMessage.success('登录成功')
 
     setTimeout(() => {
