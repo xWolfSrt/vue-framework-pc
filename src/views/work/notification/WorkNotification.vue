@@ -59,7 +59,7 @@
             class="statistic-content"
             :style="{ visibility: data.currentPage == 3 ? 'visible' : 'hidden', left: data.currentPage == 3 ? 0 : '-100%' }"
         >
-            <!-- <app-work-statistic [category]="category" #statistic></app-work-statistic> -->
+            <WorkStatistic :category="category" ref="statisticPage"></WorkStatistic>
         </div>
 
         <!-- <app-work-notification-inbox-details
@@ -85,12 +85,14 @@ import { workStore } from '../../../store/work-store'
 import WorkInbox from '../component/WorkInbox.vue'
 import WorkOutbox from '../component/WorkOutbox.vue'
 import WorkDraft from '../component/WorkDraft.vue'
+import WorkStatistic from '../component/WorkStatistic.vue'
 const { proxy } = getCurrentInstance()
 const workService = workStore()
 const category = 'ScheduleCategory_Notice'
 const inboxPage = ref(null)
 const outboxPage = ref(null)
 const draftPage = ref(null)
+const statisticPage = ref(null)
 const data = reactive({
     tabs: [
         {
@@ -128,14 +130,16 @@ onMounted(() => {
     setPageCallback()
     // updateReceiveCount()
     // startChatWebSocket()
-    isOnInit = true
+    addChartOnResizeListener()
 })
 
 onActivated(() => {
     console.log('WorkNotification---onActivated')
     isActived.value = true
 
-    if (isOnInit) {
+    if (!isOnInit) {
+        isOnInit = true
+    } else {
         onShow()
     }
 })
@@ -143,8 +147,20 @@ const onShow = () => {
     console.log('WorkNotification---onShow---')
     setPageCallback()
     // updateReceiveCount()
+    refreshChart()
 }
-
+const refreshChart = () => {
+    statisticPage && statisticPage.value && statisticPage.value.refreshChart()
+    addChartOnResizeListener()
+}
+const addChartOnResizeListener = () => {
+    setTimeout(() => {
+        window.onresize = () => {
+            console.log(statisticPage)
+            statisticPage && statisticPage.value && statisticPage.value.refreshChart()
+        }
+    }, 200)
+}
 onDeactivated(() => {
     console.log('WorkNotification---onDeactivated')
     isActived.value = false
@@ -195,7 +211,7 @@ const refreshClick = () => {
             draftPage.value.reload()
             break
         case 3:
-            // this.statisticPage.refresh()
+            statisticPage.value.refresh()
             break
         default:
             break

@@ -85,7 +85,6 @@ import sendService from '../../api/send'
 import receiveService from '../../api/receive'
 import dateService from '../../utils/date-service'
 import { workStore } from '../../store/work-store'
-import { result } from 'lodash'
 const { proxy } = getCurrentInstance()
 const workService = workStore()
 
@@ -187,7 +186,10 @@ const setPageCallback = () => {
 onActivated(() => {
     console.log('WorkHome---onActivated')
     isActived.value = true
-    if (isOnInit) {
+
+    if (!isOnInit) {
+        isOnInit = true
+    } else {
         onShow()
     }
 })
@@ -209,7 +211,6 @@ onMounted(() => {
     reloadFull()
     // startChatWebSocket()
     addChartOnResizeListener()
-    isOnInit = true
 })
 const moduleClick = (item) => {
     if (!item.page) {
