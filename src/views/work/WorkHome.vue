@@ -187,11 +187,21 @@ const setPageCallback = () => {
 onActivated(() => {
     console.log('WorkHome---onActivated')
     isActived.value = true
+    if (isOnInit) {
+        onShow()
+    }
 })
 onDeactivated(() => {
     console.log('WorkHome---onDeactivated')
     isActived.value = false
 })
+const onShow = () => {
+    console.log('WorkHome---onShow---')
+    // this.reloadFull()
+    setPageCallback()
+    refreshChart()
+}
+
 onMounted(() => {
     console.log('WorkHome---onMounted')
     setPageCallback()

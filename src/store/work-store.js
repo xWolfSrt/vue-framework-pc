@@ -3,8 +3,14 @@ import getAssetsFile from '../utils/pub-use'
 const defaultTab = '/work'
 const modules = [
     { name: '首页', code: 'work', icon: getAssetsFile('work/home/icon_tab_work.png'), page: '/work', component: 'WorkHome', fixed: true }, //fixed为true,则不允许删除
-    { name: '搜索', code: 'search', icon: getAssetsFile('work/home/icon_tab_search.png'), page: '/work/search' },
-    { name: '待办事项详情', code: 'schedule', icon: getAssetsFile('work/home/icon_tab_dbsx.png'), page: '/work/schedule' },
+    { name: '搜索', code: 'search', icon: getAssetsFile('work/home/icon_tab_search.png'), page: '/work/search', component: 'WorkSearch' },
+    {
+        name: '待办事项详情',
+        code: 'schedule',
+        icon: getAssetsFile('work/home/icon_tab_dbsx.png'),
+        page: '/work/schedule',
+        component: 'WorkSchedule',
+    },
     {
         name: '通知公告',
         code: 'notification',
@@ -12,13 +18,37 @@ const modules = [
         page: '/work/notification',
         component: 'WorkNotification',
     },
-    { name: '问卷调查', code: 'question', icon: getAssetsFile('work/home/icon_tab_wjdc.png'), page: '/work/question' },
-    { name: '投票调查', code: 'vote', icon: getAssetsFile('work/home/icon_tab_tpdc.png'), page: '/work/vote' },
-    { name: '会议会务', code: 'meeting', icon: getAssetsFile('work/home/icon_tab_hyhw.png'), page: '/work/meeting' },
-    { name: '活动报名', code: 'activity', icon: getAssetsFile('work/home/icon_tab_hdbm.png'), page: '/work/activity' },
-    { name: '内参资料', code: 'document', icon: getAssetsFile('work/home/icon_tab_nczl.png'), page: '/work/document' },
-    { name: '文件共享', code: 'file', icon: getAssetsFile('work/home/icon_tab_wjgx.png'), page: '/work/file' },
-    { name: '群组设置', code: 'group', icon: getAssetsFile('work/home/icon_tab_qzsz.png'), page: '/work/group' },
+    {
+        name: '问卷调查',
+        code: 'question',
+        icon: getAssetsFile('work/home/icon_tab_wjdc.png'),
+        page: '/work/question',
+        component: 'WorkNotification',
+    },
+    { name: '投票调查', code: 'vote', icon: getAssetsFile('work/home/icon_tab_tpdc.png'), page: '/work/vote', component: 'WorkVote' },
+    {
+        name: '会议会务',
+        code: 'meeting',
+        icon: getAssetsFile('work/home/icon_tab_hyhw.png'),
+        page: '/work/meeting',
+        component: 'WorkMeeting',
+    },
+    {
+        name: '活动报名',
+        code: 'activity',
+        icon: getAssetsFile('work/home/icon_tab_hdbm.png'),
+        page: '/work/activity',
+        component: 'WorkActivity',
+    },
+    {
+        name: '内参资料',
+        code: 'document',
+        icon: getAssetsFile('work/home/icon_tab_nczl.png'),
+        page: '/work/document',
+        component: 'WorkDocument',
+    },
+    { name: '文件共享', code: 'file', icon: getAssetsFile('work/home/icon_tab_wjgx.png'), page: '/work/file', component: 'WorkFile' },
+    { name: '群组设置', code: 'group', icon: getAssetsFile('work/home/icon_tab_qzsz.png'), page: '/work/group', component: 'WorkGroup' },
 ]
 
 export const workStore = defineStore('work', {

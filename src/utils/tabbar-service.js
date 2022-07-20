@@ -11,26 +11,26 @@ let list = [
         path: '/work',
         enable: false,
     },
-    {
-        name: '业务台',
-        code: 'business',
-        icon: {
-            common: getAssetsFile('tab/icon_tab_business.png'),
-            selected: getAssetsFile('tab/icon_tab_business_selected.png'),
-        },
-        path: '/business',
-        enable: false,
-    },
-    {
-        name: '管理台',
-        code: 'manage',
-        icon: {
-            common: getAssetsFile('tab/icon_tab_manage.png'),
-            selected: getAssetsFile('tab/icon_tab_manage_selected.png'),
-        },
-        path: '/manage',
-        enable: false,
-    },
+    // {
+    //     name: '业务台',
+    //     code: 'business',
+    //     icon: {
+    //         common: getAssetsFile('tab/icon_tab_business.png'),
+    //         selected: getAssetsFile('tab/icon_tab_business_selected.png'),
+    //     },
+    //     path: '/business',
+    //     enable: false,
+    // },
+    // {
+    //     name: '管理台',
+    //     code: 'manage',
+    //     icon: {
+    //         common: getAssetsFile('tab/icon_tab_manage.png'),
+    //         selected: getAssetsFile('tab/icon_tab_manage_selected.png'),
+    //     },
+    //     path: '/manage',
+    //     enable: false,
+    // },
     {
         name: '日程表',
         code: 'schedule',

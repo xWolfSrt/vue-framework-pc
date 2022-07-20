@@ -86,7 +86,7 @@ const loginOut = () => {
         })
         .catch((err) => {
             console.log(err)
-            Toast(err.msg || '退出登录失败')
+            Toast((err && err.msg) || '退出登录失败')
             hideLoading()
         })
 }
