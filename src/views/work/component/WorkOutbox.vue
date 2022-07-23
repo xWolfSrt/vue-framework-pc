@@ -123,9 +123,9 @@ onMounted(() => {
     reload()
 })
 const tableRowClassName = ({ row, rowIndex }) => {
-    if (row.isRead) {
-        return 'table-tr-read'
-    }
+    // if (row.isRead) {
+    //     return 'table-tr-read'
+    // }
     return 'table-tr'
 }
 

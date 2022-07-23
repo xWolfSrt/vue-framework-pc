@@ -40,7 +40,7 @@
     <Tabbar :code="'work'" @refresh="tabbarRefresh"></Tabbar>
 </template>
 <script setup>
-import { ref, reactive, getCurrentInstance, onMounted } from 'vue'
+import { ref, reactive, getCurrentInstance, onMounted, onDeactivated, onActivated } from 'vue'
 import Tabbar from '../../components/Tabbar.vue'
 import SwitchOrginization from '../../components/SwitchOrginization.vue'
 import TabManager from '../../components/TabManager.vue'
@@ -90,7 +90,12 @@ onBeforeRouteLeave((to, from) => {
     // // 取消导航并停留在同一页面上
     // if (!answer) return false
 })
-
+onActivated(() => {
+    console.log('Work---onActivated')
+})
+onDeactivated(() => {
+    console.log('WorkHome---onDeactivated')
+})
 const closeTabClick = (index) => {
     workService.closeTab(index, router)
 }

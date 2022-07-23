@@ -65,17 +65,16 @@
         <!-- <app-work-notification-inbox-details
         (forwardClick)="inboxDetailsForwardClick($event)"
         #inboxdetails
-    ></app-work-notification-inbox-details>
+    ></app-work-notification-inbox-details> -->
 
-    <app-work-notification-outbox-details
+        <!-- <app-work-notification-outbox-details
         (copyClick)="outboxDetailsCopyClick($event)"
         (forwardClick)="outboxDetailsForwardClick($event)"
         #outboxdetails
-    ></app-work-notification-outbox-details>
+    ></app-work-notification-outbox-details> -->
 
-    <app-work-notification-create (refresh)="createRefreshClick($event)" #create></app-work-notification-create>
-
-    <app-work-forward (refresh)="forwardRefreshClick()" #forward></app-work-forward> -->
+        <WorkNotificationCreate @refresh="createRefreshClick" ref="createPage"></WorkNotificationCreate>
+        <!-- <app-work-forward (refresh)="forwardRefreshClick()" #forward></app-work-forward> - -->
     </div>
 </template>
 <script setup>
@@ -86,6 +85,8 @@ import WorkInbox from '../component/WorkInbox.vue'
 import WorkOutbox from '../component/WorkOutbox.vue'
 import WorkDraft from '../component/WorkDraft.vue'
 import WorkStatistic from '../component/WorkStatistic.vue'
+import WorkNotificationCreate from './WorkNotificationCreate.vue'
+import { useRouter } from 'vue-router'
 const { proxy } = getCurrentInstance()
 const workService = workStore()
 const category = 'ScheduleCategory_Notice'
@@ -93,6 +94,8 @@ const inboxPage = ref(null)
 const outboxPage = ref(null)
 const draftPage = ref(null)
 const statisticPage = ref(null)
+const createPage = ref(null)
+const router = useRouter()
 const data = reactive({
     tabs: [
         {
@@ -131,6 +134,8 @@ onMounted(() => {
     // updateReceiveCount()
     // startChatWebSocket()
     addChartOnResizeListener()
+
+    console.log(router)
 })
 
 onActivated(() => {
@@ -218,6 +223,20 @@ const refreshClick = () => {
     }
 }
 
+const createClick = () => {
+    console.log(createPage)
+    createPage.value.show(false)
+}
+const createRefreshClick = (isPublish) => {
+    //如果是发布，则刷新全部
+    // if (isPublish) {
+    //     inboxPage.reload()
+    //     outboxPage.reload()
+    //     statisticPage.refresh()
+    //     updateReceiveCount()
+    // }
+    // draftPage.reload()
+}
 const inboxItemClick = (event) => {
     console.log('inboxItemClick', event)
     // inboxDetails.show(event.id)
@@ -236,11 +255,11 @@ const outboxForwardClick = (event) => {
 }
 const outboxCopyClick = (event) => {
     console.log('outboxCopyClick', event)
-    // this.createPage.show(true, event.id)
+    createPage.value.show(true, event.id)
 }
 const draftItemClick = (event) => {
     console.log('draftItemClick', event)
-    //   this.createPage.show(false, event.id)
+    createPage.value.show(false, event.id)
 }
 </script>
 <style lang="scss" scoped>

@@ -9,6 +9,7 @@ import axios from 'axios'
  */
 const cosUpload = (file, options) => {
     let fileName = file.name
+    let fileSize = file.size
     let _options = {
         server: options.server,
         path: `${options.directory}/${fileName}`,
@@ -36,7 +37,11 @@ const cosUpload = (file, options) => {
                     if (/^2\d\d$/.test('' + xhr.status)) {
                         console.log(url2)
                         // vm.callback.progress.call(vm.scope, 100)
-                        resolve(url2)
+                        resolve({
+                            url: url2,
+                            name: fileName,
+                            size: fileSize,
+                        })
                     } else {
                         // callback('文件 ' + Key + ' 上传失败，状态码：' + xhr.status);
                         reject(`上传失败`)

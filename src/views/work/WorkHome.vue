@@ -41,6 +41,9 @@
                         <!-- <span *ngIf="item.count">{{ item.count }}</span> -->
                     </div>
                 </div>
+
+                <!-- <el-button @click="testDebounce">防抖测试</el-button>
+                <el-button @click="testThrottle">节流测试</el-button> -->
             </div>
         </div>
         <div class="right">
@@ -85,6 +88,7 @@ import sendService from '../../api/send'
 import receiveService from '../../api/receive'
 import dateService from '../../utils/date-service'
 import { workStore } from '../../store/work-store'
+import { debounce, throttle } from 'lodash'
 const { proxy } = getCurrentInstance()
 const workService = workStore()
 
@@ -645,6 +649,26 @@ const addChartOnResizeListener = () => {
         }
     }, 200)
 }
+const testThrottle = throttle(
+    () => {
+        console.log('test throttle')
+    },
+    2000,
+    {
+        leading: true,
+        trailing: true,
+    }
+)
+const testDebounce = debounce(
+    () => {
+        console.log('test debounce')
+    },
+    2000,
+    {
+        leading: true,
+        trailing: false,
+    }
+)
 </script>
 <style lang="scss" scoped>
 .container {

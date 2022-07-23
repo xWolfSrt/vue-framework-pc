@@ -104,6 +104,7 @@ import { ref, reactive, getCurrentInstance, onMounted } from 'vue'
 import getAssetsFile from '../../../utils/pub-use'
 import receiveService from '../../../api/receive'
 import dateService from '../../../utils/date-service'
+import { debounce } from 'lodash'
 const { proxy } = getCurrentInstance()
 defineProps(['category'])
 const emits = defineEmits(['itemClick', 'forwardClick'])
@@ -130,9 +131,9 @@ onMounted(() => {
     reload()
 })
 const tableRowClassName = ({ row, rowIndex }) => {
-    if (row.isRead) {
-        return 'table-tr-read'
-    }
+    // if (row.isRead) {
+    //     return 'table-tr-read'
+    // }
     return 'table-tr'
 }
 
@@ -162,11 +163,11 @@ const reload = () => {
     load({ start: 0 })
 }
 
-const refresh = () => {
+const refresh = debounce(() => {
     if (data.isReloading) return
     data.isReloading = true
     load({ start: 0 })
-}
+}, 200)
 
 const load = (config) => {
     let isReloading = config && config.start == 0

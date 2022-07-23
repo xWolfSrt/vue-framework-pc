@@ -129,8 +129,8 @@ const afterRead = (file) => {
     showLoading('头像修改中')
     fileUpload
         .cosUpload(file.file, options)
-        .then((url) => {
-            modifyPhoto(url)
+        .then((result) => {
+            modifyPhoto(result.url)
         })
         .catch((err) => {
             console.log(err)
