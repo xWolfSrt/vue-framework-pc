@@ -106,6 +106,7 @@ import globalService from '../../../utils/global-service'
 import pictureService from '../../../utils/picture-service'
 import fileUpload from '../../../utils/file/file-upload'
 import { ElMessage } from 'element-plus'
+import dateService from '../../../utils/date-service'
 
 const { proxy } = getCurrentInstance()
 defineProps(['captcha', 'directory'])
@@ -202,65 +203,65 @@ const disabledDate = (time) => {
 }
 
 const setContent = (item) => {
-    // this.input.title = item.title
-    // this.input.remark = item.remark
-    // if (item.time) {
-    //     // let start = this.dateService.convert(item.time)
-    //     // if (start.getTime() >= new Date().getTime()) {
-    //     this.input.start = this.dateService.convert(item.time)
-    //     // }
-    // }
-    // let url = item.photo && this.pictureService.toPicture(item.photo)
-    // this.photo = {
-    //     url: url,
-    //     thumbnail: url && this.compressPicture(url, 412, 146, true),
-    // }
-    // this.fileList = item.file || []
+    data.input.title = item.title
+    data.input.remark = item.remark
+    if (item.time) {
+        // let start = this.dateService.convert(item.time)
+        // if (start.getTime() >= new Date().getTime()) {
+        data.input.start = dateService.convert(item.time)
+        // }
+    }
+    data.photo = pictureService.getPicture(item.photo, { width: 412, height: 146, original: true }) || {}
+    data.fileList = item.file || []
 }
 const getContent = (checkEmpty) => {
-    // let title = (this.input.title && this.trimStr(this.input.title)) || ''
-    // let remark = (this.input.remark && this.trimStr(this.input.remark)) || ''
-    // if (checkEmpty && !title) {
-    //     this.zwPopup.toast('请输入标题名称')
-    //     return
-    // }
-    // if (checkEmpty && !this.input.start) {
-    //     this.zwPopup.toast('请选择考核日期')
-    //     return
-    // }
-    // let start = this.dateService.convert(this.dateService.format(this.input.start, 'yyyy-MM-dd 23:59:59'))
-    // let today = this.dateService.convert(this.dateService.format(new Date(), 'yyyy-MM-dd 00:00:00'))
-    // if (checkEmpty && start.getTime() < today.getTime()) {
-    //     this.zwPopup.toast('考核日期不能早于当前时间')
-    //     return
-    // }
+    let title = (data.input.title && globalService.trimStr(data.input.title)) || ''
+    let remark = (data.input.remark && globalService.trimStr(data.input.remark)) || ''
+    if (checkEmpty && !title) {
+        ElMessage.error('请输入标题名称')
+        return
+    }
+    if (checkEmpty && !data.input.start) {
+        ElMessage.error('请选择考核日期')
+        return
+    }
+    let start = dateService.convert(dateService.format(data.input.start, 'yyyy-MM-dd 23:59:59'))
+    let today = dateService.convert(dateService.format(new Date(), 'yyyy-MM-dd 00:00:00'))
+    if (checkEmpty && start.getTime() < today.getTime()) {
+        ElMessage.error('考核日期不能早于当前时间')
+        return
+    }
 
-    // let photo = this.photo.url && JSON.stringify([{ Category: null, Index: 0, Items: [this.photo.url] }])
-    // let time = this.dateService.format(this.input.start, 'yyyy-MM-dd 23:59:59')
-    // let item = {
-    //     title: title,
-    //     photo: photo,
-    //     time: time,
-    //     remark: remark,
-    //     file: this.getUplpadFiles(),
-    // }
+    let photo = data.photo.url && JSON.stringify([{ Category: null, Index: 0, Items: [data.photo.url] }])
+    let time = dateService.format(data.input.start, 'yyyy-MM-dd 23:59:59')
+    let item = {
+        title: title,
+        photo: photo,
+        time: time,
+        remark: remark,
+        file: getUplpadFiles(),
+    }
     return item
 }
 
 const getUplpadFiles = () => {
-    // let result
-    // if (this.fileList && this.fileList.length > 0) {
-    //     let files = this.fileList.map((item) => {
-    //         return {
-    //             name: item.name,
-    //             path: item.url,
-    //             size: item.size,
-    //         }
-    //     })
-    //     result = JSON.stringify(files)
-    // }
-    // return result
+    let result
+    if (data.fileList && data.fileList.length > 0) {
+        let files = data.fileList.map((item) => {
+            return {
+                name: item.name,
+                path: item.url,
+                size: item.size,
+            }
+        })
+        result = JSON.stringify(files)
+    }
+    return result
 }
+defineExpose({
+    setContent,
+    getContent,
+})
 </script>
 <style lang="scss" scoped>
 .work-basic-editor {

@@ -127,9 +127,14 @@ const getFileProperty = (url) => {
         icon: icon,
     }
 }
+
+const trimStr = (str) => {
+    return str.replace(/(^\s*)|(\s*$)/g, '')
+}
 export default {
     getGuid,
     getFiles,
     getFileProperty,
     fileSizeChange,
+    trimStr,
 }

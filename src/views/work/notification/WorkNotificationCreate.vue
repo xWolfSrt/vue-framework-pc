@@ -39,16 +39,23 @@
                 ></div>
             </div>
 
-            <div class="edit-erea">
+            <div class="edit-erea" v-loading="loading">
                 <div class="basic" :style="{ visibility: data.step == 1 ? 'visible' : 'hidden', left: data.step == 1 ? 0 : '-100%' }">
                     <!-- <app-work-basic-editor [captcha]="temp.captcha" [directory]="uploadDirectory" #basiceditor></app-work-basic-editor> -->
                     <WorkBasicEditor :captcha="data.temp.captcha" :directory="uploadDirectory" ref="basicEditor"></WorkBasicEditor>
                 </div>
                 <div class="editor" :style="{ visibility: data.step == 2 ? 'visible' : 'hidden', left: data.step == 2 ? 0 : '-100%' }">
                     <!-- <app-wang-editor [captcha]="temp.captcha" [directory]="uploadDirectory" [content]="content" #wangeditor></app-wang-editor> -->
+                    <WangEditor
+                        :captcha="data.temp.captcha"
+                        :directory="uploadDirectory"
+                        :content="data.content"
+                        ref="wangEditor"
+                    ></WangEditor>
                 </div>
                 <div class="people" :style="{ visibility: data.step == 3 ? 'visible' : 'hidden', left: data.step == 3 ? 0 : '-100%' }">
                     <!-- <app-work-assign #workassign></app-work-assign> -->
+                    <WorkAssign ref="workAssign"></WorkAssign>
                 </div>
             </div>
         </div>
@@ -78,17 +85,25 @@
     </el-dialog>
 </template>
 <script setup>
-import { ref, reactive, getCurrentInstance } from 'vue'
+import { ref, reactive, getCurrentInstance, onMounted, nextTick } from 'vue'
+import { Close, Check } from '@element-plus/icons-vue'
 import getAssetsFile from '../../../utils/pub-use'
 import ZwLoading from '../../../components/ZwLoading.vue'
 import globalService from '../../../utils/global-service'
 import WorkBasicEditor from '../component/WorkBasicEditor.vue'
+import WangEditor from '../../../components/WangEditor.vue'
+import WorkAssign from '../component/WorkAssign.vue'
+import sendService from '../../../api/send'
+import { ElMessage } from 'element-plus'
 const { proxy } = getCurrentInstance()
 const emits = defineEmits(['refresh'])
 const zwLoading = ref(null)
 const basicEditor = ref(null)
+const wangEditor = ref(null)
+const workAssign = ref(null)
 
 const loadingBg = ref('white')
+const loading = ref(false)
 const data = reactive({
     isShow: false,
     step: 1,
@@ -100,10 +115,11 @@ const data = reactive({
 
     isUnsaveShow: false,
     temp: {},
+    content: '',
 })
 let category = 'ScheduleCategory_Notice'
 let uploadDirectory = 'release/upload/union_api_link_send'
-
+onMounted(() => {})
 //如果copy=true,说明是发件箱复制，需要获取新的captcha,如果有id，说明是发件箱复制，或者草稿箱打开，需要查询发件详情，还原数据
 const show = (copy, id) => {
     if (data.isShow) return
@@ -113,7 +129,10 @@ const show = (copy, id) => {
     data.temp.copy = copy
     if (id) {
         data.temp.id = id
-        reload()
+        //v-if之后 zwLoading还未创建
+        nextTick(() => {
+            reload()
+        })
     } else {
         //如果是新建的话，每次获取新的captcha，如果是草稿箱还原，则使用原来的captcha
         data.temp.captcha = globalService.getGuid()
@@ -166,43 +185,44 @@ const headPreviewClick = () => {
     // this.notificationPreview && this.notificationPreview.show(this.category, this.getSendContent())
 }
 const draftClick = () => {
-    // let basic = this.basicEditor.getContent(true)
-    // if (!basic) return
+    let basic = basicEditor.value.getContent(true)
+    if (!basic) return
     // this.zwPopup.showLoading('正在保存')
-    // this.sendService.save(this.getSendContent(), {
-    //     success: (result) => {
-    //         if (!result) {
-    //             this.saveError()
-    //             return
-    //         }
-    //         setTimeout(() => {
-    //             this.saveSuccess()
-    //         }, 50)
-    //     },
-    //     fail: (error) => {
-    //         this.saveError(error)
-    //     },
-    // })
+    loading.value = true
+    sendService
+        .save(getSendContent())
+        .then((result) => {
+            if (!result) {
+                saveError()
+                return
+            }
+            setTimeout(() => {
+                saveSuccess()
+            }, 50)
+        })
+        .catch((err) => {
+            saveError(err && err.msg)
+        })
 }
 const getSendContent = () => {
-    // let basic = this.basicEditor.getContent()
-    // let content = this.wangEditor.getContent()
-    // let scope = this.workAssign.getContent()
-    // let draft = {
-    //     id: null,
-    //     content: content,
-    // }
-    // return {
-    //     category: this.category,
-    //     title: basic.title,
-    //     file: basic.file,
-    //     photo: basic.photo,
-    //     remark: basic.remark,
-    //     deadline: basic.time,
-    //     draft: JSON.stringify(draft),
-    //     scope: scope,
-    //     captcha: this.temp.captcha,
-    // }
+    let basic = basicEditor.value.getContent()
+    let content = wangEditor.value.getContent()
+    let scope = workAssign.value.getContent()
+    let draft = {
+        id: null,
+        content: content,
+    }
+    return {
+        category: category,
+        title: basic.title,
+        file: basic.file,
+        photo: basic.photo,
+        remark: basic.remark,
+        deadline: basic.time,
+        draft: JSON.stringify(draft),
+        scope: scope,
+        captcha: data.temp.captcha,
+    }
 }
 const preClick = () => {
     if (data.step > 1) {
@@ -211,24 +231,24 @@ const preClick = () => {
     updateTab()
 }
 const nextClick = () => {
-    // if (data.step < data.steps.length) {
-    //     if (data.step == 1) {
-    //         let content = basicEditor.getContent(true)
-    //         if (!content) return
-    //         data.temp.basicContent = content
-    //         console.log(content)
-    //     } else if (data.step == 2) {
-    //         let content = wangEditor.getContent()
-    //         data.temp.editorContent = content
-    //         console.log(content)
-    //     }
-    //     data.step += 1
-    // } else {
-    //     let content = workAssign.getContent(true)
-    //     if (!content) return
-    //     confirmClick()
-    // }
-    // updateTab()
+    if (data.step < data.steps.length) {
+        if (data.step == 1) {
+            let content = basicEditor.value.getContent(true)
+            if (!content) return
+            data.temp.basicContent = content
+            console.log(content)
+        } else if (data.step == 2) {
+            let content = wangEditor.value.getContent()
+            data.temp.editorContent = content
+            console.log(content)
+        }
+        data.step += 1
+    } else {
+        let content = workAssign.value.getContent(true)
+        if (!content) return
+        confirmClick()
+    }
+    updateTab()
 }
 const confirmClick = () => {
     // this.zwPopup.showLoading('正在发布')
@@ -253,27 +273,32 @@ const updateTab = () => {
 }
 
 const saveSuccess = () => {
-    // console.log('saveSuccess')
+    console.log('saveSuccess')
     // this.zwPopup.hideLoading()
     // this.zwPopup.toast('保存成功')
-    // this.refreshPre(false)
-    // setTimeout(() => {
-    //     this.closeClick()
-    // }, 300)
+    loading.value = false
+    ElMessage.success('保存成功')
+    refreshPre(false)
+    setTimeout(() => {
+        closeClick()
+    }, 300)
 }
 const saveError = (msg) => {
     // this.zwPopup.hideLoading()
     // this.zwPopup.toast(msg || '保存失败')
-    // console.log('saveError')
+    loading.value = false
+    console.log('saveError')
 }
 const submitSuccess = () => {
-    // console.log('submitSuccess')
+    console.log('submitSuccess')
     // this.zwPopup.hideLoading()
     // this.zwPopup.toast('发布成功')
-    // this.refreshPre(true)
-    // setTimeout(() => {
-    //     this.closeClick()
-    // }, 300)
+    loading.value = false
+    ElMessage.success('发布成功')
+    this.refreshPre(true)
+    setTimeout(() => {
+        closeClick()
+    }, 300)
 }
 const submitError = (msg) => {
     // this.zwPopup.hideLoading()
@@ -285,29 +310,31 @@ const refreshPre = (isPublish) => {
 }
 
 const reload = (isRefresh = false) => {
-    // this.loadingBg = isRefresh ? 'transparent' : 'white'
-    // this.temp.isReloading = true
-    // zwLoading.showLoading()
-    // this.sendService.fetchSummary(this.temp.id, {
-    //     success: (result) => {
-    //         if (!result) {
-    //             this.reloadError()
-    //             return
-    //         }
-    //         this.disposeResult(result)
-    //         this.reloadFinish()
-    //     },
-    //     fail: (error) => {
-    //         this.reloadError()
-    //     },
-    // })
+    loadingBg.value = isRefresh ? 'transparent' : 'white'
+    data.temp.isReloading = true
+    console.log(zwLoading)
+    zwLoading.value.showLoading()
+    sendService
+        .fetchSummary(data.temp.id)
+        .then((result) => {
+            if (!result) {
+                reloadError()
+                return
+            }
+            disposeResult(result)
+            reloadFinish()
+        })
+        .catch((err) => {
+            console.log(err)
+            reloadError()
+        })
 }
 const disposeResult = (result) => {
     let schedule = result.schedule
 
     //如果是发件箱复制的话，每次获取新的captcha，如果是草稿箱还原，则使用原来的captcha
     if (data.temp.copy) {
-        data.temp.captcha = data.globalService.getGuid()
+        data.temp.captcha = globalService.getGuid()
     } else {
         data.temp.captcha = schedule.captcha
     }
@@ -328,21 +355,20 @@ const disposeResult = (result) => {
     }
 
     let scope = result.scope
-
-    // this.basicEditor.setContent(basic)
-    // this.wangEditor.setContent(content)
-    // this.workAssign.setContent(scope)
+    basicEditor.value.setContent(basic)
+    wangEditor.value.setContent(content)
+    workAssign.value.setContent(scope)
 
     saveInitialContent()
 }
 const reloadError = () => {
     data.temp.isReloading = false
-    zwLoading.showError()
+    zwLoading.value.showError()
 }
 const reloadFinish = () => {
     setTimeout(() => {
         data.temp.isReloading = false
-        zwLoading.hide()
+        zwLoading.value.hide()
     }, 300)
 }
 const zwLoadingErrorTap = () => {

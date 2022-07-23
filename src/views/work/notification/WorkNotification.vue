@@ -222,20 +222,28 @@ const refreshClick = () => {
             break
     }
 }
-
+const updateReceiveCount = () => {
+    // receiveService.count(this.category, {
+    //     success: (result) => {
+    //         this.tabs[0].totalCount = result || 0
+    //     },
+    //     fail: (error) => {},
+    // })
+}
 const createClick = () => {
     console.log(createPage)
     createPage.value.show(false)
 }
 const createRefreshClick = (isPublish) => {
+    console.log('~~~~~~createRefreshClick~~~~~~~')
     //如果是发布，则刷新全部
-    // if (isPublish) {
-    //     inboxPage.reload()
-    //     outboxPage.reload()
-    //     statisticPage.refresh()
-    //     updateReceiveCount()
-    // }
-    // draftPage.reload()
+    if (isPublish) {
+        inboxPage.value.reload()
+        outboxPage.value.reload()
+        statisticPage.value.refresh()
+        updateReceiveCount()
+    }
+    draftPage.value.reload()
 }
 const inboxItemClick = (event) => {
     console.log('inboxItemClick', event)
