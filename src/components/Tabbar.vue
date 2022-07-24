@@ -214,7 +214,7 @@ const disposeLoginOut = () => {
     position: fixed;
     top: 0;
     bottom: 0;
-    z-index: 998; //toastService z-index=1000
+    z-index: 98; //toastService z-index=1000
     width: $workLeftBarWeight;
     height: 100%;
     // box-shadow: 0px -5px 16px 0px rgba(65, 65, 65, 0.12);

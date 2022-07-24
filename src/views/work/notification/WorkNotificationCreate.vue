@@ -41,11 +41,9 @@
 
             <div class="edit-erea" v-loading="loading">
                 <div class="basic" :style="{ visibility: data.step == 1 ? 'visible' : 'hidden', left: data.step == 1 ? 0 : '-100%' }">
-                    <!-- <app-work-basic-editor [captcha]="temp.captcha" [directory]="uploadDirectory" #basiceditor></app-work-basic-editor> -->
                     <WorkBasicEditor :captcha="data.temp.captcha" :directory="uploadDirectory" ref="basicEditor"></WorkBasicEditor>
                 </div>
                 <div class="editor" :style="{ visibility: data.step == 2 ? 'visible' : 'hidden', left: data.step == 2 ? 0 : '-100%' }">
-                    <!-- <app-wang-editor [captcha]="temp.captcha" [directory]="uploadDirectory" [content]="content" #wangeditor></app-wang-editor> -->
                     <WangEditor
                         :captcha="data.temp.captcha"
                         :directory="uploadDirectory"
@@ -54,7 +52,6 @@
                     ></WangEditor>
                 </div>
                 <div class="people" :style="{ visibility: data.step == 3 ? 'visible' : 'hidden', left: data.step == 3 ? 0 : '-100%' }">
-                    <!-- <app-work-assign #workassign></app-work-assign> -->
                     <WorkAssign ref="workAssign"></WorkAssign>
                 </div>
             </div>

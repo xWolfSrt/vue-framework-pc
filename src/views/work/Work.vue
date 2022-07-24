@@ -127,7 +127,7 @@ const closeTabClick = (index) => {
             top: 0;
             left: 6.25rem;
             right: 0;
-            z-index: 999;
+            z-index: 99;
             display: flex;
             flex-direction: column;
             background: #f4f4f4;
