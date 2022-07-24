@@ -162,6 +162,11 @@
             </div>
         </div>
     </div>
+    <WorkAssignUnitSelector
+        :visible="data.isUnitVisible"
+        @cancel-click="cancelClick('unit')"
+        @confirm-click="confirmClick($event, 'unit')"
+    ></WorkAssignUnitSelector>
     <WorkImportGroup
         :visible="data.isImportGroupVisible"
         @cancel-click="cancelImportGroupClick"
@@ -175,6 +180,7 @@ import { ref, reactive, getCurrentInstance, onMounted } from 'vue'
 import getAssetsFile from '../../../utils/pub-use'
 import WorkImportGroup from './WorkImportGroup.vue'
 import WorkSaveGroup from './WorkSaveGroup.vue'
+import WorkAssignUnitSelector from './WorkAssignUnitSelector.vue'
 const { proxy } = getCurrentInstance()
 defineProps(['captcha', 'directory'])
 const data = reactive({

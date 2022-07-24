@@ -3,9 +3,9 @@
         <div class="modal">
             <div class="left">
                 <div class="list" v-if="!data.noData">
-                    <el-checkbox-group v-model="data.checkedList" @change="checkChange">
-                        <el-checkbox class="item" v-for="item in data.list" :key="item.id" :label="item.id">{{ item.name }}</el-checkbox>
-                    </el-checkbox-group>
+                    <el-checkbox class="item" v-for="item in data.list" :key="item.id" v-model="item.checked" @change="checkChange">{{
+                        item.name
+                    }}</el-checkbox>
                 </div>
                 <div class="empty" v-if="!data.isReloading && data.noData">
                     <el-empty description="暂无数据" :image-size="100" />
@@ -39,7 +39,6 @@ const data = reactive({
     isVisible: false,
     isReloading: false,
     list: [],
-    checkedList: [],
     noData: false,
 })
 watch(
@@ -62,13 +61,10 @@ const resetData = () => {
     data.list.forEach((item) => {
         item.checked = false
     })
-    data.checkedList = []
 }
 const handleOk = () => {
     let list = data.list.filter((item) => {
-        return data.checkedList.some((checked) => {
-            return item.id == checked
-        })
+        return item.checked
     })
     let scope = disposeSelectedList(list)
     console.log(scope)
@@ -258,11 +254,11 @@ const queryFinish = (isError = false, errMsg) => {
                     align-items: center;
 
                     // label {
-                    width: 100%;
                     color: #28292f;
                     font-size: 0.8125rem;
                     padding: 0.75rem 1.5625rem;
                     // box-sizing: border-box;
+                    margin-right: 0;
                     &:hover {
                         background: #edf0fa;
                     }
