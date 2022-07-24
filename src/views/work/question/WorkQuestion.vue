@@ -73,7 +73,7 @@
         #outboxdetails
     ></app-work-notification-outbox-details> -->
 
-        <WorkNotificationCreate @refresh="createRefreshClick" ref="createPage"></WorkNotificationCreate>
+        <WorkQuestionCreate @refresh="createRefreshClick" ref="createPage"></WorkQuestionCreate>
         <!-- <app-work-forward (refresh)="forwardRefreshClick()" #forward></app-work-forward> - -->
     </div>
 </template>
@@ -85,11 +85,11 @@ import WorkInbox from '../component/WorkInbox.vue'
 import WorkOutbox from '../component/WorkOutbox.vue'
 import WorkDraft from '../component/WorkDraft.vue'
 import WorkStatistic from '../component/WorkStatistic.vue'
-import WorkNotificationCreate from './WorkNotificationCreate.vue'
+import WorkQuestionCreate from './WorkQuestionCreate.vue'
 import { useRouter } from 'vue-router'
 const { proxy } = getCurrentInstance()
 const workService = workStore()
-const category = 'ScheduleCategory_Notice'
+const category = 'ScheduleCategory_Question'
 const inboxPage = ref(null)
 const outboxPage = ref(null)
 const draftPage = ref(null)
@@ -129,7 +129,7 @@ const data = reactive({
 let isOnInit = false
 const isActived = ref(false)
 onMounted(() => {
-    console.log('WorkNotification---onMounted')
+    console.log('WorkQuestion---onMounted')
     setPageCallback()
     // updateReceiveCount()
     // startChatWebSocket()
@@ -139,7 +139,7 @@ onMounted(() => {
 })
 
 onActivated(() => {
-    console.log('WorkNotification---onActivated')
+    console.log('WorkQuestion---onActivated')
     isActived.value = true
 
     if (!isOnInit) {
@@ -149,7 +149,7 @@ onActivated(() => {
     }
 })
 const onShow = () => {
-    console.log('WorkNotification---onShow---')
+    console.log('WorkQuestion---onShow---')
     setPageCallback()
     // updateReceiveCount()
     refreshChart()
@@ -167,7 +167,7 @@ const addChartOnResizeListener = () => {
     }, 200)
 }
 onDeactivated(() => {
-    console.log('WorkNotification---onDeactivated')
+    console.log('WorkQuestion---onDeactivated')
     isActived.value = false
 })
 
@@ -175,14 +175,14 @@ const setPageCallback = () => {
     console.log(proxy.$router)
     workService.setPageCallback(proxy.$router.currentRoute.value.path, {
         refresh: (result) => {
-            console.log('WorkNotification--PageCallback--refresh')
+            console.log('WorkQuestion--PageCallback--refresh')
             refreshClick()
         },
     })
 
     // this.receiveService.addReadListener(this.router.url, {
     //     refresh: (result) => {
-    //         console.log('WorkNotification--addRead--refresh')
+    //         console.log('WorkQuestion--addRead--refresh')
     //         this.inboxDetailsRefreshClick()
     //     },
     // })

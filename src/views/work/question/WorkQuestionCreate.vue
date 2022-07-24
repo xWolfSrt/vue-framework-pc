@@ -1,17 +1,17 @@
 <template>
-    <div class="work-notification-create-container" v-if="data.isShow">
+    <div class="work-question-create-container" v-if="data.isShow">
         <div class="header">
             <div class="back" @click="closeClick(true)" v-if="!data.hideBack">
                 <img :src="getAssetsFile('work/common/icon_back.png')" />
             </div>
-            <span :style="{ 'margin-left': data.hideBack ? '1.675rem' : '0' }">通知公告</span>
+            <span :style="{ 'margin-left': data.hideBack ? '1.675rem' : '0' }">问卷调查</span>
             <div class="preview" @click="headPreviewClick">
                 <img :src="getAssetsFile('work/common/icon_preview.png')" />
                 <span>预览</span>
             </div>
         </div>
-        <div class="center">
-            <div class="steps">
+        <div class="steps">
+            <div>
                 <div class="step" v-for="(item, i) in data.steps" :key="i">
                     <div>
                         <div class="step-line">
@@ -38,24 +38,37 @@
                     }"
                 ></div>
             </div>
+        </div>
 
-            <div class="edit-erea" v-loading="loading">
-                <div class="basic" :style="{ visibility: data.step == 1 ? 'visible' : 'hidden', left: data.step == 1 ? 0 : '-100%' }">
-                    <WorkBasicEditor :captcha="data.temp.captcha" :directory="uploadDirectory" ref="basicEditor"></WorkBasicEditor>
-                </div>
-                <div class="editor" :style="{ visibility: data.step == 2 ? 'visible' : 'hidden', left: data.step == 2 ? 0 : '-100%' }">
-                    <WangEditor
-                        :captcha="data.temp.captcha"
-                        :directory="uploadDirectory"
-                        :content="data.content"
-                        ref="wangEditor"
-                    ></WangEditor>
-                </div>
-                <div class="people" :style="{ visibility: data.step == 3 ? 'visible' : 'hidden', left: data.step == 3 ? 0 : '-100%' }">
-                    <WorkAssign ref="workAssign"></WorkAssign>
-                </div>
+        <div
+            class="edit-erea basic"
+            v-loading="loading"
+            :style="{ visibility: data.step == 1 ? 'visible' : 'hidden' }"
+            :class="{ hide: data.step != 1 }"
+        >
+            <WorkBasicEditor :captcha="data.temp.captcha" :directory="uploadDirectory" ref="basicEditor"></WorkBasicEditor>
+        </div>
+        <div
+            class="question-border-top"
+            :style="{ visibility: data.step == 2 ? 'visible' : 'hidden' }"
+            :class="{ hide: data.step != 2 }"
+        ></div>
+        <div
+            class="question-border-bottom"
+            :style="{ visibility: data.step == 2 ? 'visible' : 'hidden' }"
+            :class="{ hide: data.step != 2 }"
+        ></div>
+        <!-- <div class="question-border-left" :style="{ visibility: data.step == 2 ? 'visible' : 'hidden' }" :class="{ hide: data.step != 2 }"></div> -->
+        <!-- <div class="question-border-right" :style="{ visibility: data.step == 2 ? 'visible' : 'hidden' }" :class="{ hide: data.step != 2 }"></div> -->
+        <div class="question-erea editor" :style="{ visibility: data.step == 2 ? 'visible' : 'hidden' }" :class="{ hide: data.step != 2 }">
+            <div>
+                <WorkQuestionEditor :captcha="data.temp.captcha" :directory="uploadDirectory" ref="questionEditor"></WorkQuestionEditor>
             </div>
         </div>
+        <div class="edit-erea people" :style="{ visibility: data.step == 3 ? 'visible' : 'hidden' }" :class="{ hide: data.step != 3 }">
+            <WorkAssign ref="workAssign"></WorkAssign>
+        </div>
+
         <div class="bottom">
             <div class="draft" @click="draftClick">保存至草稿箱</div>
             <div class="pre" v-if="data.step > 1" @click="preClick()">上一步</div>
@@ -88,7 +101,7 @@ import getAssetsFile from '../../../utils/pub-use'
 import ZwLoading from '../../../components/ZwLoading.vue'
 import globalService from '../../../utils/global-service'
 import WorkBasicEditor from '../component/WorkBasicEditor.vue'
-import WangEditor from '../../../components/WangEditor.vue'
+import WorkQuestionEditor from '../component/WorkQuestionEditor.vue'
 import WorkAssign from '../component/WorkAssign.vue'
 import sendService from '../../../api/send'
 import { ElMessage } from 'element-plus'
@@ -96,7 +109,7 @@ const { proxy } = getCurrentInstance()
 const emits = defineEmits(['refresh'])
 const zwLoading = ref(null)
 const basicEditor = ref(null)
-const wangEditor = ref(null)
+const questionEditor = ref(null)
 const workAssign = ref(null)
 
 const loadingBg = ref('white')
@@ -114,7 +127,7 @@ const data = reactive({
     temp: {},
     content: '',
 })
-let category = 'ScheduleCategory_Notice'
+let category = 'ScheduleCategory_Question'
 let uploadDirectory = 'release/upload/union_api_link_send'
 onMounted(() => {})
 //如果copy=true,说明是发件箱复制，需要获取新的captcha,如果有id，说明是发件箱复制，或者草稿箱打开，需要查询发件详情，还原数据
@@ -201,13 +214,12 @@ const draftClick = () => {
             saveError(err && err.msg)
         })
 }
-const getSendContent = () => {
+const getSendContent = (isPublish = false) => {
     let basic = basicEditor.value.getContent()
-    let content = wangEditor.value.getContent()
+    let content = questionEditor.value.getContent(false, isPublish)
     let scope = workAssign.value.getContent()
     let draft = {
-        id: null,
-        content: content,
+        formInfo: content,
     }
     return {
         category: category,
@@ -235,7 +247,8 @@ const nextClick = () => {
             data.temp.basicContent = content
             console.log(content)
         } else if (data.step == 2) {
-            let content = wangEditor.value.getContent()
+            let content = questionEditor.value.getContent(true)
+            if (!content) return
             data.temp.editorContent = content
             console.log(content)
         }
@@ -251,7 +264,7 @@ const confirmClick = () => {
     // this.zwPopup.showLoading('正在发布')
     loading.value = true
     sendService
-        .publish(getSendContent())
+        .publish(getSendContent(true))
         .then((result) => {
             if (!result) {
                 submitError()
@@ -348,14 +361,10 @@ const disposeResult = (result) => {
     }
 
     let draft = schedule.draft && JSON.parse(schedule.draft)
-    let content = ''
-    if (draft) {
-        content = draft.content
-    }
 
     let scope = result.scope
     basicEditor.value.setContent(basic)
-    wangEditor.value.setContent(content)
+    questionEditor.value.setContent(draft && draft.formInfo)
     workAssign.value.setContent(scope)
 
     saveInitialContent()
@@ -380,24 +389,24 @@ defineExpose({
 </script>
 <style lang="scss" scoped>
 @import '../../../common/styles/variable/index.scss';
-.work-notification-create-container {
+.work-question-create-container {
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: calc(100% - #{$workTopHeight});
+    height: 100%;
     position: absolute;
     z-index: 91;
     left: 0;
-    top: $workTopHeight;
+    top: 0;
     box-sizing: border-box;
     background: white;
 
     // animation: fadeIn 0.3s ease-in;
     // -webkit-animation-fill-mode: forwards;
     // animation-fill-mode: forwards;
+    padding-top: calc(#{$workTopHeight} + 2.75rem + 6rem);
 
     .header {
-        width: 100%;
         height: 2.75rem;
         display: flex;
         align-items: center;
@@ -405,6 +414,13 @@ defineExpose({
         box-sizing: border-box;
         background: white;
         border-bottom: 1px solid #c6c6c6;
+
+        position: fixed;
+        top: $workTopHeight;
+        left: $workLeftBarWeight;
+        right: 0;
+        z-index: 200;
+        min-width: calc(#{$minScreenWidth} - #{$workLeftBarWeight});
 
         .back {
             flex-shrink: 0;
@@ -455,156 +471,268 @@ defineExpose({
             }
         }
     }
-
-    .center {
-        width: 100%;
-        height: calc(100% - 2.75rem - 4.75rem);
+    .steps {
         display: flex;
-        flex-direction: column;
         align-items: center;
+        justify-content: center;
+        height: 6rem;
+        background: white;
         box-sizing: border-box;
-        padding: 0 3.125rem;
-        // position: relative;
-        // overflow-y: auto;
-        // overflow-x: hidden;
+        position: fixed;
+        top: calc(#{$workTopHeight} + 2.75rem);
+        left: $workLeftBarWeight;
+        right: 0;
+        z-index: 200;
+        min-width: calc(#{$minScreenWidth} - #{$workLeftBarWeight});
 
-        .steps {
+        > div {
             display: flex;
             align-items: center;
             justify-content: center;
             height: 6rem;
-            background: white;
-            box-sizing: border-box;
             position: relative;
+        }
+        .step {
+            width: 146px;
+            display: flex;
+            flex-shrink: 0;
+            align-items: center;
+            flex-direction: column;
 
-            .step {
-                width: 146px;
+            > div {
+                width: 100%;
                 display: flex;
-                flex-shrink: 0;
                 align-items: center;
-                flex-direction: column;
 
-                > div {
-                    width: 100%;
-                    display: flex;
-                    align-items: center;
+                .step-line {
+                    flex: 1;
+                    height: 3px;
 
-                    .step-line {
+                    div {
                         flex: 1;
                         height: 3px;
+                        border-bottom: 3px solid #c6d1fd;
 
-                        div {
-                            flex: 1;
-                            height: 3px;
-                            border-bottom: 3px solid #c6d1fd;
-
-                            &.selected {
-                                border-bottom: 3px solid #5874e8;
-                            }
-                        }
-                    }
-
-                    .step-number {
-                        flex-shrink: 0;
-                        width: 2rem;
-                        height: 2rem;
-                        background: #5874e8;
-                        border-radius: 2rem;
-                        margin: 0 0.4375rem;
-                        background: #b2c2de;
-                        color: white;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        box-sizing: border-box;
-
-                        &.complete {
-                            background: #5874e8;
-                        }
-                        &.current {
-                            background: #5874e8;
-                        }
-                        img {
-                            width: 1rem;
-                            height: 0.8125rem;
-                        }
-
-                        span {
-                            font-size: 1.25rem;
-                            color: white;
-                            line-height: 1;
-
-                            &.complete {
-                                color: white;
-                            }
-                            &.current {
-                                color: white;
-                            }
+                        &.selected {
+                            border-bottom: 3px solid #5874e8;
                         }
                     }
                 }
-                .step-value {
-                    margin-top: 0.5rem;
+
+                .step-number {
                     flex-shrink: 0;
-                    font-size: 0.75rem;
-                    color: #8395b4;
-                    &.selected {
-                        color: #5874e8;
+                    width: 2rem;
+                    height: 2rem;
+                    background: #5874e8;
+                    border-radius: 2rem;
+                    margin: 0 0.4375rem;
+                    background: #b2c2de;
+                    color: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-sizing: border-box;
+
+                    &.complete {
+                        background: #5874e8;
+                    }
+                    &.current {
+                        background: #5874e8;
+                    }
+                    img {
+                        width: 1rem;
+                        height: 0.8125rem;
+                    }
+
+                    span {
+                        font-size: 1.25rem;
+                        color: white;
+                        line-height: 1;
+
+                        &.complete {
+                            color: white;
+                        }
+                        &.current {
+                            color: white;
+                        }
                     }
                 }
             }
-
-            .step-slider {
-                position: absolute;
-                content: ' ';
-                left: 0;
-                bottom: 0;
-                width: 30px;
-                height: 30px;
-                margin-left: 58px;
-                // border-radius: 4px;
-                // background-color: #6d89fa;
-                -webkit-transition: -webkit-transform 0.3s;
-                transition: -webkit-transform 0.3s;
-                transition: transform 0.3s;
-                transition: transform 0.3s, -webkit-transform 0.3s;
-
-                &:after {
-                    border: 15px solid transparent;
-                    border-bottom: 15px solid #6d89fa;
-                    width: 0;
-                    height: 0;
-                    position: absolute;
-                    right: 0px;
-                    content: ' ';
+            .step-value {
+                margin-top: 0.5rem;
+                flex-shrink: 0;
+                font-size: 0.75rem;
+                color: #8395b4;
+                &.selected {
+                    color: #5874e8;
                 }
             }
         }
 
-        .edit-erea {
-            width: 100%;
-            flex: 1;
-            border: 1px solid #dfe8f7;
-            border-top: 6px solid #6d89fd;
-            box-shadow: 0px 3px 12px 0px rgba(0, 0, 0, 0.08);
-            position: relative;
-            > div {
+        .step-slider {
+            position: absolute;
+            content: ' ';
+            left: 0;
+            bottom: 0;
+            width: 30px;
+            height: 30px;
+            margin-left: 58px;
+            // border-radius: 4px;
+            // background-color: #6d89fa;
+            -webkit-transition: -webkit-transform 0.3s;
+            transition: -webkit-transform 0.3s;
+            transition: transform 0.3s;
+            transition: transform 0.3s, -webkit-transform 0.3s;
+
+            &:after {
+                border: 15px solid transparent;
+                border-bottom: 15px solid #6d89fa;
+                width: 0;
+                height: 0;
                 position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                z-index: 1;
+                right: 0px;
+                content: ' ';
             }
+        }
+    }
+
+    // .center {
+    //     width: 100%;
+    //     height: calc(100% - 2.75rem - 4.75rem);
+    //     display: flex;
+    //     flex-direction: column;
+    //     align-items: center;
+    //     box-sizing: border-box;
+    //     padding: 0 3.125rem;
+    //     // position: relative;
+    //     // overflow-y: auto;
+    //     // overflow-x: hidden;
+
+    .edit-erea {
+        // border: 1px solid #dfe8f7;
+        border-top: 0.375rem solid #6d89fd;
+        box-shadow: 0px 3px 12px 0px rgba(0, 0, 0, 0.08);
+        position: fixed;
+        top: calc(#{$workTopHeight} + 2.75rem + 6rem);
+        left: calc(#{$workLeftBarWeight} + 3.125rem);
+        right: 3.125rem;
+        bottom: 4.75rem;
+        z-index: 201;
+
+        min-width: calc(#{$minScreenWidth} - #{$workLeftBarWeight} - 3.125rem - 3.125rem);
+
+        &.basic {
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        &.hide {
+            left: -100%;
+            right: 100%;
+        }
+    }
+
+    .question-border-top {
+        // border: 1px solid #6d89fd;
+        // border-top: 6px solid #6d89fd;
+        height: 0.375rem;
+        background: #6d89fd;
+        box-shadow: 0px 3px 12px 0px rgba(0, 0, 0, 0.08);
+        position: fixed;
+        top: calc(#{$workTopHeight} + 2.75rem + 6rem);
+        left: calc(#{$workLeftBarWeight} + 3.125rem);
+        right: 3.125rem;
+        // bottom: 4.75rem;
+        z-index: 200;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        min-width: calc(#{$minScreenWidth} - #{$workLeftBarWeight} - 3.125rem - 3.125rem);
+        &.hide {
+            left: -100%;
+            right: 100%;
+        }
+    }
+    .question-border-left {
+        background: #dfe8f7;
+        width: 1px;
+        box-shadow: 0px 3px 12px 0px rgba(0, 0, 0, 0.08);
+        position: fixed;
+        top: calc(#{$workTopHeight} + 2.75rem + 6rem);
+        bottom: 4.75rem;
+        left: calc(#{$workLeftBarWeight} + 3.125rem);
+        z-index: 200;
+
+        box-sizing: border-box;
+        &.hide {
+            left: -100%;
+            right: 100%;
+        }
+    }
+    .question-border-right {
+        background: #dfe8f7;
+        width: 1px;
+        box-shadow: 0px 3px 12px 0px rgba(0, 0, 0, 0.08);
+        position: fixed;
+        top: calc(#{$workTopHeight} + 2.75rem + 6rem);
+        bottom: 4.75rem;
+        right: 3.125rem;
+        z-index: 200;
+        box-sizing: border-box;
+        &.hide {
+            left: -100%;
+            right: 100%;
+        }
+    }
+    .question-border-bottom {
+        background: #dfe8f7;
+        box-shadow: 0px 3px 12px 0px rgb(0 0 0 / 8%);
+        position: fixed;
+        bottom: 4.75rem;
+        left: calc(6.25rem + 3.125rem);
+        right: 3.125rem;
+        z-index: 200;
+        box-sizing: border-box;
+        height: 1px;
+        min-width: calc(#{$minScreenWidth} - #{$workLeftBarWeight} - 3.125rem - 3.125rem);
+        &.hide {
+            left: -100%;
+            right: 100%;
+        }
+    }
+
+    .question-erea {
+        flex: 1;
+        padding: 0.375rem 3.125rem 4.75rem;
+        box-sizing: border-box;
+        width: 100%;
+        > div {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #dfe8f7;
+            border-top: 0;
+            border-bottom: 0;
+        }
+        &.hide {
+            position: fixed;
+            left: -100%;
+            right: 100%;
+            z-index: 200;
         }
     }
     .bottom {
         flex-shrink: 0;
-        width: 100%;
         height: 4.75rem;
         display: flex;
         align-items: center;
         justify-content: center;
+        background: white;
+        position: fixed;
+        z-index: 199;
+        bottom: 0;
+        left: $workLeftBarWeight;
+        right: 0;
+        min-width: calc(#{$minScreenWidth} - #{$workLeftBarWeight});
 
         div {
             width: 6.8125rem;

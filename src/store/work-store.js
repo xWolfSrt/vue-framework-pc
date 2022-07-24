@@ -23,7 +23,7 @@ const modules = [
         code: 'question',
         icon: getAssetsFile('work/home/icon_tab_wjdc.png'),
         page: '/work/question',
-        component: 'WorkNotification',
+        component: 'WorkQuestion',
     },
     { name: '投票调查', code: 'vote', icon: getAssetsFile('work/home/icon_tab_tpdc.png'), page: '/work/vote', component: 'WorkVote' },
     {

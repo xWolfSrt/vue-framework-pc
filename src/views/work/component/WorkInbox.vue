@@ -86,6 +86,7 @@
             <span>共{{ data.totalCount }}项</span>
 
             <el-pagination
+                background
                 v-model:currentPage="data.pageIndex"
                 v-model:page-size="data.pageSize"
                 layout="sizes, prev, pager, next"

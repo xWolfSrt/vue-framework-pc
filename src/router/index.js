@@ -37,6 +37,7 @@ const routes = [
             { path: '', component: () => import('@/views/work/WorkHome.vue') },
             { path: 'search', component: () => import('@/views/work/WorkSearch.vue') },
             { path: 'notification', component: () => import('@/views/work/notification/WorkNotification.vue') },
+            { path: 'question', component: () => import('@/views/work/question/WorkQuestion.vue') },
         ],
     },
     {

@@ -35,7 +35,7 @@
                             </el-dropdown>
                         </div>
                     </div>
-                    <div class="list" v-if="!noData">
+                    <div class="list" v-if="!data.noData">
                         <el-checkbox
                             class="item"
                             :indeterminate="data.indeterminate"
@@ -52,7 +52,7 @@
                         </el-checkbox>
 
                         <el-checkbox class="item" v-for="item in data.list" :key="item.id" v-model="item.checked" @change="checkChange"
-                            >{{ item.label }}<span v-if="type == 1">（{{ item.count || 0 }}人）</span></el-checkbox
+                            >{{ item.label }}<span v-if="data.type == 1">（{{ item.count || 0 }}人）</span></el-checkbox
                         >
                     </div>
                     <div class="empty" v-if="!data.isReloading && data.noData">
@@ -65,22 +65,28 @@
                 <div class="right">
                     <div class="search-container">
                         <div class="search">
-                            <img :src="getAssetsFile('work/common/icon_search.png')" />
-                            <input
+                            <!-- <img :src="getAssetsFile('work/common/icon_search.png')" /> -->
+                            <!-- <input
                                 id="content"
                                 type="text"
                                 maxlength="50"
                                 placeholder="搜索"
                                 placeholder-style="color:#C3C3C3"
                                 v-model="data.input.content"
-                                @change="searchChange()"
+                                @change="searchChange"
                                 ref="content"
-                            />
-                            <img
+                            /> -->
+                            <el-input v-model="data.input.content" placeholder="搜索" maxLength="50" clearable @input="searchChange">
+                                <template #prefix>
+                                    <img class="search-icon" :src="getAssetsFile('work/common/icon_search.png')" />
+                                </template>
+                            </el-input>
+
+                            <!-- <img
                                 :src="getAssetsFile('work/common/icon_input_clear.png')"
                                 @click="clearSearch()"
                                 v-if="data.input.content"
-                            />
+                            /> -->
                         </div>
                     </div>
                     <div class="list">
@@ -250,6 +256,7 @@ const removeOptionsOne = (i) => {
     clearSearch()
 }
 const searchChange = (event) => {
+    console.log(event)
     if (data.isReloading) return
     let content = (event && globalService.trimStr(event)) || ''
 
@@ -564,15 +571,22 @@ const updatePeopleList = () => {
                     align-items: center;
                     justify-content: center;
 
-                    a {
-                        font-size: 0.75rem;
-                        color: #8395b4;
-                        min-width: 6.4rem;
-                        text-align: center;
-                    }
+                    // a {
+                    //     font-size: 0.75rem;
+                    //     color: #8395b4;
+                    //     min-width: 6.4rem;
+                    //     text-align: center;
+                    // }
 
-                    i {
-                        color: #caccd8;
+                    // i {
+                    //     color: #caccd8;
+                    // }
+
+                    .el-dropdown-link {
+                        cursor: pointer;
+                        color: #8395b4;
+                        display: flex;
+                        align-items: center;
                     }
                 }
             }
@@ -636,50 +650,55 @@ const updatePeopleList = () => {
                 box-sizing: border-box;
 
                 .search {
-                    padding: 0 0 0 0.5rem;
+                    // padding: 0 0 0 0.5rem;
                     box-sizing: border-box;
                     display: flex;
                     align-items: center;
                     width: 100%;
-                    height: 2rem;
-                    background: #ffffff;
-                    border: 1px solid #dedede;
-                    border-radius: 4px;
+                    // height: 2rem;
+                    // background: #ffffff;
+                    // border: 1px solid #dedede;
+                    // border-radius: 4px;
 
-                    img:nth-of-type(1) {
+                    // img:nth-of-type(1) {
+                    //     flex-shrink: 0;
+                    //     width: 1.25rem;
+                    //     height: auto;
+                    //     margin-right: 0.25rem;
+                    // }
+
+                    .search-icon {
                         flex-shrink: 0;
                         width: 1.25rem;
                         height: auto;
-                        margin-right: 0.25rem;
                     }
+                    // input {
+                    //     flex: 1;
+                    //     height: 100%;
+                    //     font-size: 0.75rem;
+                    //     color: #262626;
 
-                    input {
-                        flex: 1;
-                        height: 100%;
-                        font-size: 0.75rem;
-                        color: #262626;
-
-                        &::-webkit-input-placeholder {
-                            color: #d6d6d6;
-                        }
-                        &::-moz-placeholder {
-                            color: #d6d6d6;
-                        }
-                        &:-ms-input-placeholder {
-                            color: #d6d6d6;
-                        }
-                        &:-moz-placeholder {
-                            color: #d6d6d6;
-                        }
-                    }
-                    img:nth-of-type(2) {
-                        flex-shrink: 0;
-                        width: 1rem;
-                        height: 1rem;
-                        padding: 0.25rem 0.75rem;
-                        box-sizing: content-box;
-                        cursor: pointer;
-                    }
+                    //     &::-webkit-input-placeholder {
+                    //         color: #d6d6d6;
+                    //     }
+                    //     &::-moz-placeholder {
+                    //         color: #d6d6d6;
+                    //     }
+                    //     &:-ms-input-placeholder {
+                    //         color: #d6d6d6;
+                    //     }
+                    //     &:-moz-placeholder {
+                    //         color: #d6d6d6;
+                    //     }
+                    // }
+                    // img:nth-of-type(2) {
+                    //     flex-shrink: 0;
+                    //     width: 1rem;
+                    //     height: 1rem;
+                    //     padding: 0.25rem 0.75rem;
+                    //     box-sizing: content-box;
+                    //     cursor: pointer;
+                    // }
                 }
             }
             .list {
