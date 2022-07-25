@@ -57,6 +57,7 @@
             </div>
         </div>
         <div class="bottom">
+            <!-- <div @click="changeCount">改变WorkNotificaiton数量</div> -->
             <div class="draft" @click="draftClick">保存至草稿箱</div>
             <div class="pre" v-if="data.step > 1" @click="preClick()">上一步</div>
             <div class="next" @click="nextClick">{{ data.step == data.steps.length ? '发布' : '下一步' }}</div>
@@ -82,7 +83,7 @@
     </el-dialog>
 </template>
 <script setup>
-import { ref, reactive, getCurrentInstance, onMounted, nextTick } from 'vue'
+import { ref, reactive, getCurrentInstance, onMounted, nextTick, inject } from 'vue'
 import { Close, Check } from '@element-plus/icons-vue'
 import getAssetsFile from '../../../utils/pub-use'
 import ZwLoading from '../../../components/ZwLoading.vue'
@@ -114,6 +115,18 @@ const data = reactive({
     temp: {},
     content: '',
 })
+const changeParentCount = inject('changeCount')
+const changeParentAge = inject('changeAge')
+const testCount = inject('testCount')
+const changeCount = () => {
+    // console.log(testCount)
+    // console.log(changeParentCount)
+    // let count = testCount.count + 1
+    // let age = testCount.user.age + 1
+    testCount.user.age += 1
+    // changeParentCount(count)
+    // changeParentAge(age)
+}
 let category = 'ScheduleCategory_Notice'
 let uploadDirectory = 'release/upload/union_api_link_send'
 onMounted(() => {})

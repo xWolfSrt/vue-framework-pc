@@ -203,17 +203,59 @@ function login() {
         return
     }
     showLoading('正在登录')
+    // userService
+    //     .validateCaptcha(phone.value, captcha.value)
+    //     .then((result) => {
+    //         console.log(result)
+
+    //         if (result) {
+    //             console.log('验证成功', result)
+    //             phoneRegisterOrLogin()
+    //         } else {
+    //             hideLoading()
+    //             ElMessage.error('验证码不正确或已过期')
+    //         }
+    //     })
+    //     .catch(({ msg, code }) => {
+    //         console.log(msg)
+    //         registerError(msg)
+    //     })
+
     userService
         .validateCaptcha(phone.value, captcha.value)
         .then((result) => {
             console.log(result)
-
             if (result) {
                 console.log('验证成功', result)
-                phoneRegisterOrLogin()
+                return userService.registerOrLogin(phone.value, captcha.value)
             } else {
                 hideLoading()
                 ElMessage.error('验证码不正确或已过期')
+            }
+        })
+        .then((result) => {
+            console.log(result)
+            // let token = result
+            // proxy.$storage.set('token', token)
+            proxy.$storage.set('lastLoginPhone', phone.value)
+            return userService.getAccountSummary()
+        })
+        .then((result) => {
+            if (result) {
+                let account = userService.convertAccount(result)
+                proxy.$storage.set('currentAccount', account)
+                return organizationService.queryList()
+            } else {
+                registerError()
+            }
+        })
+        .then((result) => {
+            if (!result || result.length == 0) {
+                ElMessage.error('暂未加入组织')
+                // this.hideLoading()
+            } else {
+                console.log(result)
+                registerSuccess()
             }
         })
         .catch(({ msg, code }) => {
@@ -253,6 +295,7 @@ function getAccount() {
             registerError()
         })
 }
+
 function getOrganizationList() {
     organizationService
         .queryList()

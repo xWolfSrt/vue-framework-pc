@@ -215,6 +215,44 @@ onMounted(() => {
     reloadFull()
     // startChatWebSocket()
     addChartOnResizeListener()
+
+    // let obj = {
+    //     name: 'a',
+    //     age: 1,
+    //     scholl: '康康大学',
+    //     sayHello: function (job, hobby) {
+    //         console.log(`我在${this.scholl},我是${this.name},年龄${this.age},是个${job},爱好是${hobby},${this.min}`)
+    //     },
+    // }
+    // obj.sayHello('程序员', '打篮球')
+
+    // let obj1 = {
+    //     name: 'b',
+    //     age: 2,
+    //     min: 10,
+    // }
+    // obj.sayHello.call(obj1, '建造师', '音乐')
+    // let args = ['建造师', '音乐', 'aaaa']
+    // obj.sayHello.apply(obj1, [...args])
+
+    // let obj2 = '1111'
+    // obj.sayHello.apply(obj2, [...args])
+
+    // let fun = obj.sayHello.bind(obj1, '建造师222', '音乐222')
+    // console.log(fun)
+    // fun()
+
+    function Animal(weight) {
+        this.weight = weight
+    }
+    Animal.prototype.name = 'animal'
+    Animal.prototype.height = 10
+    var cat1 = new Animal()
+    var pinkCat = cat1
+    console.log(cat1)
+    console.log(pinkCat)
+
+    console.log('cat1.__proto__ === Animal.prototype', cat1.__proto__ === Animal.prototype)
 })
 const moduleClick = (item) => {
     if (!item.page) {

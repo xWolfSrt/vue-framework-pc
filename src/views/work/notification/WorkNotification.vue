@@ -78,7 +78,7 @@
     </div>
 </template>
 <script setup>
-import { ref, reactive, getCurrentInstance, onMounted, onDeactivated, onActivated } from 'vue'
+import { ref, reactive, getCurrentInstance, onMounted, onDeactivated, onActivated, provide, watch, readonly } from 'vue'
 import getAssetsFile from '../../../utils/pub-use'
 import { workStore } from '../../../store/work-store'
 import WorkInbox from '../component/WorkInbox.vue'
@@ -125,7 +125,27 @@ const data = reactive({
     sliderBarWidth: 36,
     sliderBarMarginLeft: 37.5,
 })
-
+const testCount = reactive({
+    count: 0,
+    user: {
+        age: 10,
+    },
+})
+const changeCount = (count) => {
+    testCount.count = count
+    console.log('parent changeCount', testCount)
+}
+const changeAge = (count) => {
+    testCount.user.age = count
+    console.log('parent changeAge', testCount)
+}
+provide('testCount', readonly(testCount))
+provide('testCount', testCount)
+provide('changeCount', changeCount)
+provide('changeAge', changeAge)
+watch(testCount, (now, pre) => {
+    console.log('parent testCount change', now, pre)
+})
 let isOnInit = false
 const isActived = ref(false)
 onMounted(() => {
