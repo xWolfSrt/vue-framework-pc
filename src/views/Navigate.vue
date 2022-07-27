@@ -8,10 +8,14 @@ import ZwLoading from '../components/ZwLoading.vue'
 import organizationService from '../api/organization'
 import userService from '../api/user'
 import tabbarService from '../utils/tabbar-service'
+import { appStore } from '../store/app-store'
+import { workStore } from '../store/work-store'
 import { ElMessage } from 'element-plus'
 
 const { proxy } = getCurrentInstance()
 const zwLoading = ref(null)
+const appService = appStore()
+const workService = workStore()
 let isReloading = false
 
 let retryCount = 0
@@ -34,7 +38,8 @@ onMounted(() => {
     } catch (error) {
         console.log(error)
     }
-
+    appService.clear()
+    workService.clear()
     reload()
 })
 const reload = () => {

@@ -60,24 +60,25 @@ export const workStore = defineStore('work', {
         }
     },
     getters: {
+        //获取keep-live需要include的组件数组
         keepAlive(state) {
             let keep = state.tabs.map((item) => {
                 return item.component
             })
-            console.log('~~~~~~~~~~~~~~~~~~~~~~', keep)
+            console.log('~~~~~~~~~~work store~~~~~~~~~~~~', keep)
             return keep
         },
     },
     actions: {
         addTab(url) {
             let page = url.indexOf('?') != -1 ? url.substring(0, url.indexOf('?')) : url
-            console.log('page=' + page)
+            console.log('work store page=' + page)
 
             let menu = modules.find((module) => module.page == page) //判断是否是需要处理标签的路由
             if (!menu) return
             let existMenu = this.tabs.find((tab) => tab.page == page)
-            console.log('existMenu=', existMenu)
-            console.log('modules=', modules)
+            console.log('work store existMenu=', existMenu)
+            console.log('work store modules=', modules)
             this.tabs.forEach((tab) => (tab.selected = false))
             if (existMenu) {
                 //如果存在不添加，当前表示选中
@@ -174,7 +175,6 @@ export const workStore = defineStore('work', {
             this.subscriptionMap[path] = item
             // console.log('addSubscription subscriptionMap 2=', this.subscriptionMap)
         },
-
         clearSubscription() {
             try {
                 for (let key in this.subscriptionMap) {

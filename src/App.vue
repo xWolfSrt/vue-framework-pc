@@ -2,7 +2,7 @@
     <router-view v-slot="{ Component, route }">
         <!-- 根路由不能使用key，否则子路由会重复创建 -->
         <!-- <component :is="Component" :key="route.fullPath" /> -->
-        <keep-alive :include="keepAlive">
+        <keep-alive :include="appService.keepAlive">
             <component :is="Component" />
         </keep-alive>
     </router-view>
@@ -11,12 +11,14 @@
 <script setup>
 import { ref, reactive, getCurrentInstance, onMounted } from 'vue'
 import config from './config'
+import { appStore } from './store/app-store'
 const { proxy } = getCurrentInstance()
-
-const keepAlive = reactive(['Work', 'Schedule', 'Contact'])
+const appService = appStore()
+// const keepAlive = reactive(['Work', 'Schedule', 'Contact'])
 
 onMounted(() => {
     initHost()
+    console.log(appService)
 })
 
 const initHost = () => {

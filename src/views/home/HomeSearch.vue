@@ -2,9 +2,9 @@
     <div class="container">搜索</div>
 </template>
 <script lang="ts" setup>
-import { ref, reactive, getCurrentInstance, onMounted } from 'vue'
-// const { proxy } = getCurrentInstance()
-const proxy = getCurrentInstance()?.proxy
+import { ref, reactive, getCurrentInstance, onMounted, ComponentInternalInstance } from 'vue'
+const { proxy } = getCurrentInstance() as ComponentInternalInstance
+// const proxy = getCurrentInstance()?.proxy
 interface People {
     name: string
     age: number

@@ -131,10 +131,15 @@ const getFileProperty = (url) => {
 const trimStr = (str) => {
     return str.replace(/(^\s*)|(\s*$)/g, '')
 }
+//返回介于 min 和 max之间的随机整数 , (1,100)  1<=number<=100, (1,100,false) 1<=number<100
+const getRndInteger = (min, max, includeMax = true) => {
+    return Math.floor(Math.random() * (max - min + (includeMax ? 1 : 0))) + min
+}
 export default {
     getGuid,
     getFiles,
     getFileProperty,
     fileSizeChange,
     trimStr,
+    getRndInteger,
 }

@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 import Splash from '@/views/Splash.vue'
 import pinia from '../store'
+import { appStore } from '../store/app-store'
 import { workStore } from '../store/work-store'
 const routes = [
     { path: '/', redirect: '/splash' },
@@ -35,7 +36,7 @@ const routes = [
         component: () => import('@/views/work/Work.vue'),
         children: [
             { path: '', component: () => import('@/views/work/WorkHome.vue') },
-            { path: 'search', component: () => import('@/views/work/WorkSearch.vue') },
+            // { path: 'search', component: () => import('@/views/work/WorkSearch.vue') },
             { path: 'notification', component: () => import('@/views/work/notification/WorkNotification.vue') },
             { path: 'question', component: () => import('@/views/work/question/WorkQuestion.vue') },
         ],
@@ -100,9 +101,11 @@ const router = createRouter({
     // history: createWebHistory('/'),
 })
 
+const appService = appStore(pinia) //传入pinia 解决afterEach中不能使用的问题
 const workService = workStore(pinia) //传入pinia 解决afterEach中不能使用的问题
 router.afterEach((to, from) => {
     // if (to.path.indexOf('/work') != -1) {
+    appService.addTab(to.path)
     workService.addTab(to.path)
     // }
 })

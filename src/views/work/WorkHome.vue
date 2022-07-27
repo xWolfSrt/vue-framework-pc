@@ -88,7 +88,8 @@ import sendService from '../../api/send'
 import receiveService from '../../api/receive'
 import dateService from '../../utils/date-service'
 import { workStore } from '../../store/work-store'
-import { debounce, throttle } from 'lodash'
+import { cloneDeep, debounce, throttle } from 'lodash'
+import globalService from '../../utils/global-service'
 const { proxy } = getCurrentInstance()
 const workService = workStore()
 
@@ -216,6 +217,7 @@ onMounted(() => {
     // startChatWebSocket()
     addChartOnResizeListener()
 
+    //-------call、apply、bind
     // let obj = {
     //     name: 'a',
     //     age: 1,
@@ -242,17 +244,218 @@ onMounted(() => {
     // console.log(fun)
     // fun()
 
-    function Animal(weight) {
-        this.weight = weight
-    }
-    Animal.prototype.name = 'animal'
-    Animal.prototype.height = 10
-    var cat1 = new Animal()
-    var pinkCat = cat1
-    console.log(cat1)
-    console.log(pinkCat)
+    //-------原型
+    // function Animal(weight) {
+    //     this.weight = weight
+    // }
+    // Animal.prototype.name = 'animal'
+    // Animal.prototype.height = 10
+    // var cat1 = new Animal()
+    // var pinkCat = cat1
+    // console.log(cat1)
+    // console.log(pinkCat)
 
-    console.log('cat1.__proto__ === Animal.prototype', cat1.__proto__ === Animal.prototype)
+    // console.log('cat1.__proto__ === Animal.prototype', cat1.__proto__ === Animal.prototype)
+
+    //-------Set
+    // let a = [1, 1, 2, 2, 3, 4, 5, 6, 7, 7]
+    // let arr = new Set(a)
+    // console.log(arr)
+    // console.log(Array.from(arr))
+
+    //-------Map
+    // let map = new Map()
+    // map.set('name', 'wangdi')
+    // map.set('say', () => {
+    //     console.log('say~~~~~~~~~~~~`')
+    // })
+    // map.set(a, '一个数组')
+
+    // console.log(map.get('name'))
+    // console.log(map.get(a))
+    // map.get('say')()
+    // console.log(map.keys())
+    // console.log(map.values())
+    // console.log(map.entries())
+    // map.forEach((item) => {
+    //     console.log(item)
+    // })
+
+    //------- Object.assign
+    // let ob1 = { a: 1 }
+    // let ob2 = { b: 2, c: 3 }
+    // let ob3 = {
+    //     say: () => {
+    //         console.log('ob3')
+    //     },
+    //     a: [1, 2, 3, 4],
+    // }
+    // Object.assign(ob1, ob2, ob3)
+    // console.log(ob1)
+    // ob1.say()
+    // console.log(Object.entries(ob1))
+
+    //-------深拷贝、浅拷贝
+    // let ob1 = {
+    //     a: 1,
+    //     b: 2,
+    //     C: {
+    //         d: 3,
+    //         e: 4,
+    //         x: [1, 2, 3, 4, 5],
+    //     },
+    //     f: new Date(),
+    //     g: () => {
+    //         console.log('ob1 g')
+    //     },
+    // }
+    // let ob2 = ob1
+    // ob2.a = 2
+    // ob2.C.d = 5
+    // ob2.g()
+    // console.log(ob1, ob2)
+
+    // let ob2 = { ...ob1 }
+    // ob2.a = 2
+    // ob2.C.d = 5
+    // ob2.g()
+    // console.log(ob1, ob2)
+
+    // let ob2 = Object.assign({}, ob1)
+    // ob2.a = 2
+    // ob2.C.d = 5
+    // ob2.g()
+    // console.log(ob1, ob2)
+
+    // let ob2 = JSON.parse(JSON.stringify(ob1))
+    // ob2.a = 2
+    // ob2.C.d = 5
+    // // ob2.g()
+    // console.log(ob1, ob2)
+
+    // let ob2 = cloneDeep(ob1)
+    // ob2.a = 2
+    // ob2.C.d = 5
+    // ob2.g()
+    // console.log(ob1, ob2)
+
+    //-------break.continue
+    // out: for (let i = 0; i < 10; i++) {
+    //     for (let j = 0; j < 5; j++) {
+    //         if (i == 3) {
+    //             continue out
+    //         }
+    //         console.log(`${i}---${j}`)
+    //     }
+    //     if (i == 6) {
+    //         break out
+    //     }
+    //     console.log(`${i}---【】`)
+    // }
+    // console.log(`---【】`)
+
+    //-------for-in,for-of
+    // let a = ['red', 'green', 'yellow']
+    // let b = {
+    //     name: 'red',
+    //     age: 18,
+    // }
+    // let map = new Map()
+    // map.set('student', 'abc')
+    // map.set('school', 'def')
+
+    // for (const key in a) {
+    //     console.log(key, a[key])
+    // }
+
+    // for (const key in b) {
+    //     console.log(key, b[key])
+    // }
+
+    // for (const iterator of a) {
+    //     console.log(iterator)
+    // }
+    // for (const iterator of map) {
+    //     let [i, j] = iterator
+    //     console.log(iterator)
+    //     console.log(i, j)
+    // }
+
+    // let stus = ['Sam', '22', '男']
+    // stus.size = 3
+    // Array.prototype.name = '1111'
+    // for (let stu in stus) {
+    //     console.log(stu)
+    // }
+
+    //-------iterator
+    // let arr = 'study'
+    // let arr = ['red', 'green', 'yellow']
+    // let iterator = arr[Symbol.iterator]()
+    // let done = false
+    // while (!done) {
+    //     let next = iterator.next()
+    //     console.log(next)
+    //     console.log(next.value)
+    //     console.log(next.done)
+    //     if (next.done) done = true
+    // }
+    //类数组对象，数值键名，length，部署Symbol.iterator 迭代生成函数
+    // let obj = {
+    //     0: 'a',
+    //     1: 'b',
+    //     2: 'c',
+    //     length: 3,
+    //     [Symbol.iterator]: Array.prototype[Symbol.iterator],
+    // }
+    // for (const iterator of obj) {
+    //     console.log(iterator)
+    // }
+
+    // let set = new Set([1, 1, 2, 3, 4, 5, 5, 5, 6])
+    // console.log(set)
+    // let iterator = set[Symbol.iterator]()
+    // console.log(iterator.next())
+    // console.log(iterator.next())
+    // console.log(iterator.next())
+    // console.log(iterator.next())
+    // console.log(iterator.next())
+    // console.log(iterator.next())
+    // console.log(iterator.next())
+    // console.log(iterator.next())
+    // for (const iterator of set) {
+    //     console.log(iterator)
+    // }
+
+    // let map = new Map()
+    // map.set('student', 'abc')
+    // map.set('school', 'def')
+    // let iterator = map[Symbol.iterator]()
+    // console.log(iterator.next())
+    // console.log(iterator.next())
+    // console.log(iterator.next())
+
+    // 有一个数组，它的长度为1000，里边存放的是1-100之间的整数，如何实现统计里边每个数字出现的次数及其将它们按出现次数的多到少排序
+    // let arr = new Array(100)
+    // for (let index = 0; index < arr.length; index++) {
+    //     arr[index] = globalService.getRndInteger(1, 100)
+    // }
+    // let map = new Map()
+    // for (const iterator of arr) {
+    //     if (map.has(iterator)) {
+    //         let count = map.get(iterator) + 1
+    //         map.set(iterator, count)
+    //     } else {
+    //         map.set(iterator, 1)
+    //     }
+    // }
+    // let arr1 = Array.from(map)
+    // arr1.sort((a, b) => {
+    //     return b[1] - a[1]
+    // })
+    // console.log(arr)
+    // console.log(map)
+    // console.log(arr1)
 })
 const moduleClick = (item) => {
     if (!item.page) {
