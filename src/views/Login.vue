@@ -58,6 +58,7 @@
                 </div>
             </div>
         </div>
+        <ZwToast ref="zwToast"></ZwToast>
     </div>
 </template>
 <script setup>
@@ -67,6 +68,7 @@ import getAssetsFile from '../utils/pub-use'
 import userService from '../api/user'
 import organizationService from '../api/organization'
 import Navbar from '../components/Navbar.vue'
+import ZwToast from '../components/ZwToast.vue'
 
 const { proxy } = getCurrentInstance()
 
@@ -88,7 +90,7 @@ const isAutoLogin = ref(false)
 
 let timer
 const countDownText = ref(0)
-
+const zwToast = ref(null)
 defineProps({})
 onMounted(() => {
     console.log(proxy)
@@ -337,14 +339,10 @@ function registerError(msg) {
     }, 300)
 }
 function showLoading(content) {
-    // Toast.loading({
-    //     duration: 0,
-    //     message: content || '加载中...',
-    //     forbidClick: true,
-    // })
+    zwToast.value.loading(content || '加载中...', true)
 }
 function hideLoading() {
-    // Toast.clear()
+    zwToast.value.clear()
 }
 </script>
 <style lang="scss" scoped>

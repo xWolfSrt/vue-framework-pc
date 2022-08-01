@@ -64,10 +64,6 @@
                                         :key="k"
                                     >
                                         <img class="selection-drag" :src="getAssetsFile('work/question/icon_drag_child.png')" />
-                                        <!-- <nz-input-group
-                                        [nzPrefix]="child.type == 'text-single' ? prefixSingle : prefixMultiple"
-                                    >
-                                    </nz-input-group> -->
                                         <el-input v-model="selection.name" :placeholder="' 选项' + (k + 1)" maxLength="100" clearable>
                                             <template #prefix>
                                                 <div class="prefix-single" v-if="child.type == 'text-single'"></div>
@@ -92,28 +88,6 @@
                                                 >
                                             </template>
                                         </el-input>
-
-                                        <!-- <ng-template #prefixSingle><div class="prefix-single"></div></ng-template>
-                                    <ng-template #prefixMultiple><div class="prefix-multiple"></div></ng-template>
-                                    <ng-template #inputClearTpl>
-                                        <span
-                                            class="selection-other-tag"
-                                            v-if="selection.editable && child.selected"
-                                            :style="{
-                                                height: '1.375rem',
-                                                background: '#F7F8FA',
-                                                border: '1px solid #dedede',
-                                                'margin-left': '.5rem',
-                                                'font-size': '.75rem',
-                                                padding: '0 .5rem',
-                                                'text-align': 'center',
-                                                color: ' #A1A1A1',
-                                                'line-heigth': '1.375rem'
-                                            }"
-                                            >允许填空</span
-                                        >
-                                
-                                    </ng-template> -->
                                         <img
                                             class="selection-remove"
                                             :class="{ selected: child.selected }"
@@ -131,61 +105,56 @@
                             </template>
                             <template v-if="child.type == 'picture-single' || child.type == 'picture-multiple'">
                                 <div class="picture">
-                                    <!-- <nz-list nzGrid>
-                                    <div nz-row [nzGutter]="12">
-                                        <div
-                                            nz-col
-                                            [nzXXl]="3"
-                                            [nzXl]="6"
-                                            [nzLg]="6"
-                                            [nzMd]="6"
-                                            [nzSm]="6"
-                                            [nzXs]="6"
-                                            *ngFor="let selection of child.selections; let k = index"
-                                        >
-                                            <nz-list-item>
-                                                <div class="picture-item" :class="{ unselected: !child.selected }">
-                                                    <div class="photo">
-                                                        <img [src]="selection.thumbnail" @click="pickPhoto(i, j, k)" />
-                                                        <img
-                                                            :src="getAssetsFile('work/question/icon_remove_picture.png')"
-                                                            @click="removeSelection(i, j, k)"
-                                                        />
-                                                    </div>
-                                                    <nz-input-group
-                                                        [nzPrefix]="child.type == 'picture-single' ? prefixSingle : prefixMultiple"
+                                    <el-row :gutter="12">
+                                        <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6" v-for="(selection, k) in child.selections" :key="k">
+                                            <div class="picture-item" :class="{ unselected: !child.selected }">
+                                                <div class="photo">
+                                                    <el-upload
+                                                        ref="upload"
+                                                        class="upload-wrap"
+                                                        action="#"
+                                                        accept="image/png, image/jpeg"
+                                                        :auto-upload="false"
+                                                        :on-change="pickPhoto.bind(this, i, j, k)"
+                                                        :show-file-list="false"
                                                     >
-                                                        <textarea
-                                                            nz-input
-                                                            [placeholder]="'选项' + (k + 1)"
-                                                            [nzAutosize]="{ minRows: 1, maxRows: 10 }"
-                                                            [(ngModel)]="selection.name"
-                                                            maxlength="100"
-                                                        ></textarea>
-                                                    </nz-input-group>
-                                                    <ng-template #prefixSingle>
-                                                        <div class="prefix-single">
-                                                            <div></div>
-                                                        </div>
-                                                    </ng-template>
-                                                    <ng-template #prefixMultiple>
-                                                        <div class="prefix-multiple">
-                                                            <div></div>
-                                                        </div>
-                                                    </ng-template>
+                                                        <img class="picture-item-img" :src="selection.thumbnail" />
+                                                    </el-upload>
+                                                    <img
+                                                        :src="getAssetsFile('work/question/icon_remove_picture.png')"
+                                                        @click="removeSelection(i, j, k)"
+                                                    />
                                                 </div>
-                                            </nz-list-item>
-                                        </div>
-                                        <div nz-col [nzXXl]="3" [nzXl]="6" [nzLg]="6" [nzMd]="6" [nzSm]="6" [nzXs]="6">
-                                            <nz-list-item>
-                                                <div class="add-photo" @click="addPictureItem(i, j)">
+                                                <el-input
+                                                    v-model="selection.name"
+                                                    :placeholder="'选项' + (k + 1)"
+                                                    maxlength="100"
+                                                    clearable
+                                                >
+                                                    <template #prefix>
+                                                        <div class="prefix-single" v-if="child.type == 'picture-single'"></div>
+                                                        <div class="prefix-multiple" v-else></div>
+                                                    </template>
+                                                </el-input>
+                                            </div>
+                                        </el-col>
+                                        <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">
+                                            <el-upload
+                                                ref="upload"
+                                                class="upload-wrap"
+                                                action="#"
+                                                accept="image/png, image/jpeg"
+                                                :auto-upload="false"
+                                                :on-change="addPictureItem.bind(this, i, j)"
+                                                :show-file-list="false"
+                                            >
+                                                <div class="add-photo">
                                                     <img :src="getAssetsFile('work/question/icon_add_picture.png')" />
                                                     <span>上传图片</span>
                                                 </div>
-                                            </nz-list-item>
-                                        </div>
-                                    </div>
-                                </nz-list> -->
+                                            </el-upload>
+                                        </el-col>
+                                    </el-row>
                                 </div>
                             </template>
                             <div
@@ -254,37 +223,39 @@
                     <span>可选范围</span>
                     <div class="select min">
                         <span>最少</span>
-                        <!-- <nz-select
-                        [(ngModel)]="list[selectedIndex.i].children[selectedIndex.j].min"
-                        [compareWith]="compareFn"
-                        [nzNotFoundContent]="'无可选项'"
-                        (ngModelChange)="configMinChange($event)"
-                        nzAllowClear
-                        nzPlaceHolder="不限"
-                    >
-                        <nz-option
-                            *ngFor="let option of list[selectedIndex.i].children[selectedIndex.j].minOptionList"
-                            [nzValue]="option"
-                            [nzLabel]="option.label"
-                        ></nz-option>
-                    </nz-select> -->
+
+                        <el-select
+                            v-model="data.list[data.selectedIndex.i].children[data.selectedIndex.j].min"
+                            :no-data-text="'无可选项'"
+                            clearable
+                            placeholder="不限"
+                            @change="configMinChange"
+                        >
+                            <el-option
+                                v-for="option in data.list[data.selectedIndex.i].children[data.selectedIndex.j].minOptionList"
+                                :key="option.label"
+                                :label="option.label"
+                                :value="option"
+                            />
+                        </el-select>
                     </div>
                     <div class="select max">
                         <span>最多</span>
-                        <!-- <nz-select
-                        [(ngModel)]="list[selectedIndex.i].children[selectedIndex.j].max"
-                        [compareWith]="compareFn"
-                        [nzNotFoundContent]="'无可选项'"
-                        (ngModelChange)="configMaxChange($event)"
-                        nzAllowClear
-                        nzPlaceHolder="不限"
-                    >
-                        <nz-option
-                            *ngFor="let option of list[selectedIndex.i].children[selectedIndex.j].maxOptionList"
-                            [nzValue]="option"
-                            [nzLabel]="option.label"
-                        ></nz-option>
-                    </nz-select> -->
+
+                        <el-select
+                            v-model="data.list[data.selectedIndex.i].children[data.selectedIndex.j].max"
+                            :no-data-text="'无可选项'"
+                            clearable
+                            placeholder="不限"
+                            @change="configMaxChange"
+                        >
+                            <el-option
+                                v-for="option in data.list[data.selectedIndex.i].children[data.selectedIndex.j].maxOptionList"
+                                :key="option.label"
+                                :label="option.label"
+                                :value="option"
+                            />
+                        </el-select>
                     </div>
                 </div>
             </div>
@@ -316,6 +287,7 @@
             </span>
         </template>
     </el-dialog>
+    <ZwToast ref="zwToast"></ZwToast>
 </template>
 <script setup>
 import { ElMessage } from 'element-plus'
@@ -323,7 +295,9 @@ import { ref, reactive, getCurrentInstance, onMounted } from 'vue'
 import { Close, Check } from '@element-plus/icons-vue'
 import globalService from '../../../utils/global-service'
 import pictureService from '../../../utils/picture-service'
+import fileUpload from '../../../utils/file/file-upload'
 import getAssetsFile from '../../../utils/pub-use'
+import ZwToast from '../../../components/ZwToast.vue'
 const { proxy } = getCurrentInstance()
 defineProps(['captcha', 'directory', 'isVote'])
 const data = reactive({
@@ -348,7 +322,7 @@ const data = reactive({
 
     isAddSelectionVisible: false,
 })
-
+const zwToast = ref(null)
 let captcha
 let directory
 onMounted(() => {
@@ -733,34 +707,24 @@ const childClick = (i, j) => {
     }
 }
 
-const addPictureItem = (i, j) => {
-    // let captcha = this.captcha
-    // let directory = this.uploadDirectory
-    // this.zwPhotoPicker.showPickerDirect(
-    //     this,
-    //     {
-    //         start: () => {
-    //             this.zwPopup.showLoading('加载中', true)
-    //         },
-    //         success: (url, name) => {
-    //             console.log('success url:', url)
-    //             console.log('success name:', name)
-    //             this.zwPopup.hideLoading()
-    //             this.addPictureSelection(i, j, url)
-    //         },
-    //         fail: (msg) => {
-    //             console.log('fail msg', msg)
-    //             this.zwPopup.hideLoading()
-    //             this.zwPopup.toast(msg || '加载失败')
-    //         },
-    //         progress: (progress) => {},
-    //     },
-    //     {
-    //         server: this.constantService.cos.server,
-    //         directory: `${directory}/${captcha}`,
-    //     },
-    //     new ZwPhotoPickerConfig(false)
-    // )
+const addPictureItem = (i, j, file) => {
+    if (!file) return
+    let options = {
+        server: 'cowx-gsdl-server',
+        directory: `${directory}/${captcha}`,
+    }
+    zwToast.value.loading('加载中', true)
+    fileUpload
+        .cosUpload(file.raw, options)
+        .then((result) => {
+            zwToast.value.clear()
+            addPictureSelection(i, j, result.url)
+        })
+        .catch((err) => {
+            console.log(err)
+            zwToast.value.clear()
+            zwToast.value.toast('加载失败')
+        })
 }
 const addPictureSelection = (i, j, url) => {
     let child = data.list[i].children[j]
@@ -777,34 +741,24 @@ const addPictureSelection = (i, j, url) => {
         updateMinMaxOptionList(i, j)
     }
 }
-const pickPhoto = (i, j, k) => {
-    // let captcha = this.temp.captcha
-    // let directory = this.uploadDirectory
-    // this.zwPhotoPicker.showPickerDirect(
-    //     this,
-    //     {
-    //         start: () => {
-    //             this.zwPopup.showLoading('加载中', true)
-    //         },
-    //         success: (url, name) => {
-    //             console.log('success url:', url)
-    //             console.log('success name:', name)
-    //             this.zwPopup.hideLoading()
-    //             this.modifyPhoto(i, j, k, url)
-    //         },
-    //         fail: (msg) => {
-    //             console.log('fail msg', msg)
-    //             this.zwPopup.hideLoading()
-    //             this.zwPopup.toast(msg || '加载失败')
-    //         },
-    //         progress: (progress) => {},
-    //     },
-    //     {
-    //         server: this.constantService.cos.server,
-    //         directory: `${directory}/${captcha}`,
-    //     },
-    //     new ZwPhotoPickerConfig(false)
-    // )
+const pickPhoto = (i, j, k, file) => {
+    if (!file) return
+    let options = {
+        server: 'cowx-gsdl-server',
+        directory: `${directory}/${captcha}`,
+    }
+    zwToast.value.loading('加载中', true)
+    fileUpload
+        .cosUpload(file.raw, options)
+        .then((result) => {
+            zwToast.value.clear()
+            modifyPhoto(i, j, k, result.url)
+        })
+        .catch((err) => {
+            console.log(err)
+            zwToast.value.clear()
+            zwToast.value.toast('加载失败')
+        })
 }
 
 const modifyPhoto = (i, j, k, url) => {
@@ -1385,6 +1339,7 @@ defineExpose({
                     margin: 0.25rem 0;
 
                     span {
+                        flex-shrink: 0;
                         font-size: 0.75rem;
                         color: #272f53;
                         margin-right: 0.75rem;
@@ -1730,6 +1685,14 @@ defineExpose({
     box-sizing: border-box;
     overflow: hidden;
 
+    :deep(.el-upload) {
+        width: 100%;
+        height: 100%;
+    }
+    .upload-wrap {
+        width: 100%;
+        height: 100%;
+    }
     .picture-item {
         // float: left;
         box-sizing: border-box;
@@ -1741,19 +1704,20 @@ defineExpose({
         flex-direction: column;
         position: relative;
         // margin: 0.375rem;
+        margin-bottom: 0.75rem;
 
         .photo {
             width: 100%;
             height: 8.375rem;
             position: relative;
             cursor: pointer;
-            img:nth-of-type(1) {
+            .picture-item-img {
                 object-fit: contain;
                 width: 100%;
                 height: 100%;
             }
 
-            img:nth-of-type(2) {
+            > img {
                 background: rgba(0, 0, 0, 0.6);
                 width: 0.5rem;
                 height: 0.5rem;
@@ -1766,10 +1730,13 @@ defineExpose({
             }
         }
 
-        nz-input-group {
+        :deep(.el-input__wrapper, .el-input__wrapper.is-focus, .el-input__wrapper.is-focus:hover) {
             border: none;
             border-top: 1px solid #b1bdf2;
+            box-shadow: none;
+            border-radius: 0;
         }
+
         textarea {
             resize: none;
             font-size: 0.75rem;
@@ -1796,32 +1763,19 @@ defineExpose({
                 background: #f1f1f1;
             }
         }
-
         .prefix-single {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            div {
-                width: 0.875rem;
-                height: 0.875rem;
-                border: 1px solid #8395b4;
-                border-radius: 50%;
-                // margin-right: 0.25rem;
-                margin-top: 0.5rem;
-            }
+            width: 0.875rem;
+            height: 0.875rem;
+            border: 1px solid #8395b4;
+            border-radius: 50%;
+            // margin-right: 0.25rem;
         }
 
         .prefix-multiple {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            div {
-                width: 0.875rem;
-                height: 0.875rem;
-                border: 1px solid #8395b4;
-                // margin-right: 0.25rem;
-                margin-top: 0.5rem;
-            }
+            width: 0.875rem;
+            height: 0.875rem;
+            border: 1px solid #8395b4;
+            // margin-right: 0.25rem;
         }
 
         &.unselected {
@@ -1836,7 +1790,8 @@ defineExpose({
     }
     .add-photo {
         // width: 8.375rem;
-        height: 11.0625rem;
+        width: 100%;
+        height: 10.4375rem;
         background: #ffffff;
         border: 1px solid #b1bdf2;
         border-radius: 2px;
@@ -1847,6 +1802,7 @@ defineExpose({
         box-sizing: border-box;
         cursor: pointer;
         // margin: 0.375rem;
+        margin-bottom: 0.75rem;
 
         &:active {
             background: #f9f9f9;
