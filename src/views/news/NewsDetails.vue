@@ -35,7 +35,7 @@
 </template>
 <script setup>
 import { ref, reactive, getCurrentInstance, onMounted, computed } from 'vue'
-import { Toast, ImagePreview } from 'vant'
+// import { Toast, ImagePreview } from 'vant'
 import getAssetsFile from '../../utils/pub-use'
 import { useRouter } from 'vue-router'
 import newsService from '../../api/news'
@@ -196,24 +196,24 @@ const foreachPreviewElement = (el) => {
 const previewPhotoClick = (index) => {
     let list = data.previewImgList
     console.log(list)
-    ImagePreview({
-        images: list,
-        closeable: true,
-        startPosition: index,
-    })
+    // ImagePreview({
+    //     images: list,
+    //     closeable: true,
+    //     startPosition: index,
+    // })
 }
 const zwLoadingErrorTap = () => {
     reload()
 }
 const showLoading = (content) => {
-    Toast.loading({
-        duration: 0,
-        message: content || '加载中...',
-        forbidClick: true,
-    })
+    // Toast.loading({
+    //     duration: 0,
+    //     message: content || '加载中...',
+    //     forbidClick: true,
+    // })
 }
 const hideLoading = () => {
-    Toast.clear()
+    // Toast.clear()
 }
 </script>
 <style lang="scss" scoped>

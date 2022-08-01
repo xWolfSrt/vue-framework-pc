@@ -5,9 +5,9 @@
         <div class="list" v-if="data.account">
             <div class="item">
                 <span>头像</span>
-                <van-uploader preview-size="45" :max-count="1" :after-read="afterRead" accept="image/png, image/jpeg">
+                <!-- <van-uploader preview-size="45" :max-count="1" :after-read="afterRead" accept="image/png, image/jpeg">
                     <img class="photo" :src="data.account.photo || getAssetsFile('common/profile_photo.png')" />
-                </van-uploader>
+                </van-uploader> -->
                 <img class="arrow" :src="getAssetsFile('common/icon_next.png')" />
             </div>
             <div class="item" @click="nickClick">
@@ -34,7 +34,7 @@
 </template>
 <script setup>
 import { ref, reactive, getCurrentInstance, onMounted, toRaw } from 'vue'
-import { Toast } from 'vant'
+// import { Toast } from 'vant'
 import Navbar from '../../components/Navbar.vue'
 import getAssetsFile from '../../utils/pub-use'
 import userService from '../../api/user'
@@ -107,14 +107,14 @@ const submitError = (msg) => {
 }
 
 const showLoading = (content) => {
-    Toast.loading({
-        duration: 0,
-        message: content || '加载中...',
-        forbidClick: true,
-    })
+    // Toast.loading({
+    //     duration: 0,
+    //     message: content || '加载中...',
+    //     forbidClick: true,
+    // })
 }
 const hideLoading = () => {
-    Toast.clear()
+    // Toast.clear()
 }
 const afterRead = (file) => {
     // 此时可以自行将文件上传至服务器

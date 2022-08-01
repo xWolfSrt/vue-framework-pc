@@ -158,7 +158,7 @@ export default {
 
 <script setup>
 import { ref, reactive, getCurrentInstance, onMounted, onActivated, onDeactivated, onUnmounted, computed } from 'vue'
-import { Toast } from 'vant'
+// import { Toast } from 'vant'
 import DPlayer from 'dplayer'
 import Tabbar from '../../components/Tabbar.vue'
 import NewsItem from '../news/NewsItem.vue'
@@ -438,12 +438,12 @@ const queryError = (error) => {
                 zwLoading.value.showError()
                 data.temp.zoneView = undefined
             } else {
-                Toast('网络异常')
+                // Toast('网络异常')
                 queryFinish()
             }
             break
         case 2:
-            Toast('网络异常')
+            // Toast('网络异常')
             refreshing.value = false //停止下拉刷新
             break
     }
@@ -919,14 +919,14 @@ const initHotVideoPlayer = (photo, video) => {
     }, 500)
 }
 const showLoading = (content) => {
-    Toast.loading({
-        duration: 0,
-        message: content || '加载中...',
-        forbidClick: true,
-    })
+    // Toast.loading({
+    //     duration: 0,
+    //     message: content || '加载中...',
+    //     forbidClick: true,
+    // })
 }
 const hideLoading = () => {
-    Toast.clear()
+    // Toast.clear()
 }
 const tabRefresh = () => {
     console.log('home tabRefresh')
@@ -1084,7 +1084,7 @@ const queryErrorNews = (index) => {
     if (tab.isReloading && tab.list && tab.list.length == 0) tab.noData = true
     tab.isReloading = false
     tab.isLoadingMore = false
-    Toast('加载失败')
+    // Toast('加载失败')
 }
 
 const newsItemClick = (event) => {

@@ -24,6 +24,7 @@
                                 placeholder="请输入手机号码"
                                 v-on:focus="focusInput('mobile', true)"
                                 v-on:blur="focusInput('mobile', false)"
+                                @keyup.enter="login"
                             />
                         </label>
                         <div class="captcha-container">
@@ -36,6 +37,7 @@
                                     placeholder="请输入验证码"
                                     v-on:focus="focusInput('captcha', true)"
                                     v-on:blur="focusInput('captcha', false)"
+                                    @keyup.enter="login"
                                 />
                             </label>
                             <div class="captcha-btn" :class="{ disabled: captchaConfig.counting }" @click.prevent="getCaptcha">

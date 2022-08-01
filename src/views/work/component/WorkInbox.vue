@@ -128,6 +128,7 @@ const data = reactive({
     noData: false,
 })
 onMounted(() => {
+    console.log(proxy)
     data.category = proxy.$props.category
     reload()
 })

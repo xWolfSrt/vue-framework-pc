@@ -127,7 +127,7 @@
 </template>
 <script setup>
 import { ref, reactive, getCurrentInstance, onMounted, onActivated, onDeactivated } from 'vue'
-import { Toast } from 'vant'
+// import { Toast } from 'vant'
 import Tabbar from '../../components/Tabbar.vue'
 import getAssetsFile from '../../utils/pub-use'
 import PersonalItem from './PersonalItem.vue'
@@ -192,7 +192,7 @@ const getListItem = (icon, name, page, permission, background, extra, options) =
 const personalItemClick = (item) => {
     console.log('personalItemClick', item)
     if (!item.page) {
-        Toast('敬请期待')
+        // Toast('敬请期待')
         return
     }
     if (item.page == 'contact') {

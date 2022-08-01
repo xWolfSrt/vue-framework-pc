@@ -37,7 +37,7 @@
 </template>
 <script setup>
 import { ref, reactive, getCurrentInstance, onMounted } from 'vue'
-import { Toast } from 'vant'
+// import { Toast } from 'vant'
 import Navbar from '../../components/Navbar.vue'
 import WebViewDialog from '../../components/WebViewDialog.vue'
 import getAssetsFile from '../../utils/pub-use'
@@ -73,11 +73,11 @@ const loginOut = () => {
         .logout()
         .then((result) => {
             if (!result) {
-                Toast('注销失败')
+                // Toast('注销失败')
                 hideLoading()
                 return
             }
-            Toast('已退出登录')
+            // Toast('已退出登录')
             confirmLoginOut()
             setTimeout(() => {
                 navbarBack()
@@ -86,7 +86,7 @@ const loginOut = () => {
         })
         .catch((err) => {
             console.log(err)
-            Toast((err && err.msg) || '退出登录失败')
+            // Toast((err && err.msg) || '退出登录失败')
             hideLoading()
         })
 }
@@ -98,14 +98,14 @@ const confirmLoginOut = () => {
     proxy.$storage.set('needRefreshHome', true)
 }
 const showLoading = (content) => {
-    Toast.loading({
-        duration: 0,
-        message: content || '加载中...',
-        forbidClick: true,
-    })
+    // Toast.loading({
+    //     duration: 0,
+    //     message: content || '加载中...',
+    //     forbidClick: true,
+    // })
 }
 const hideLoading = () => {
-    Toast.clear()
+    // Toast.clear()
 }
 </script>
 <style lang="scss" scoped>
