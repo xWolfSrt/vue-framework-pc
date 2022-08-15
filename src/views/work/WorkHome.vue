@@ -896,6 +896,7 @@ const testThrottle = throttle(
     },
     2000,
     {
+        //默认 true true
         leading: true,
         trailing: true,
     }
@@ -906,6 +907,7 @@ const testDebounce = debounce(
     },
     2000,
     {
+        //默认 false true
         leading: true,
         trailing: false,
     }

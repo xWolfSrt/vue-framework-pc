@@ -64,7 +64,104 @@ const data = reactive({
 })
 onMounted(() => {
     console.log(router)
+
+    // let man = new Man('a', 1, { name: 'b', grade: 'c' })
+    // man.say()
+    // man.saySchool()
+    // man.jump()
+
+    // let woman = new Woman('e', 2, { name: 'f', grade: 'g' })
+    // woman.sing()
+
+    // function Anim(name, type) {
+    //     this.name = name
+    //     this.type = type
+    // }
+    // Anim.prototype.run = function () {
+    //     console.log(`${this.name} 是 ${this.type}`)
+    // }
+    // let mouse = new Anim('mouse', '鼠类')
+    // let cat = new Anim('cat', '猫科')
+
+    // console.log(mouse.name)
+    // console.log(cat.name)
+    // console.log(cat.constructor == mouse.constructor)
+    // mouse.run()
+    // cat.run()
+    // console.log(cat.run == mouse.run)
+    // console.log(cat.__proto__ === Anim.prototype)
+
+    // console.log(mouse.hasOwnProperty('name'))
+
+    // console.log(`-------------Object Function----------------------`)
+    // let obj = {}
+    // console.log(obj.__proto__ == Object.prototype) //true
+    // console.log(Object.__proto__ == Function.prototype) //true
+    // console.log(Object.prototype.__proto__) //null
+    // console.log(Object.prototype.constructor == Object) //true
+    // console.log(Object.constructor == Function.constructor) //true
+
+    // function Person() {}
+    // let fn = new Person()
+    // console.log(fn.__proto__ == Person.prototype) //true
+    // console.log(Person == Person.prototype.constructor) //true  每个原型都有一个constructor属性，指向该关联的构造函数
+    // console.log(Person.__proto__ == Function.prototype) //true
+    // console.log(fn.constructor == Person.prototype.constructor) //true 因为每一个对象都会从原型中“继承”属性，cat1中并没有属性constructor ，但是它的原型cat1.__proto__ 指向的是Animal.prototype，然而Animal.prototype原型中是有属性constructor的，于是cat1的constructor属性继承与原型中的constructor属性
+    // console.log(fn.constructor == Person) //true 因为每一个对象都会从原型中“继承”属性，cat1中并没有属性constructor ，但是它的原型cat1.__proto__ 指向的是Animal.prototype，然而Animal.prototype原型中是有属性constructor的，于是cat1的constructor属性继承与原型中的constructor属性
+
+    // console.log(Function.prototype.__proto__ == Object.prototype) //true Function.prototype是Object的实例对象
+    // console.log(Object.__proto__ == Function.prototype) //true Object和Function都是构造函数，而所有的构造函数的都是Function的实例对象. 因此Object是Function的实例对象
+
+    // console.log(Function.prototype == Function.__proto__) //true
+    // console.log(Function.prototype.constructor == Function) //true
+
+    // console.log(`-------------typeof---------------------`)
+    // console.log(typeof 123 == 'number')
+    // console.log(typeof 'abc' == 'string')
+    // console.log(typeof true == 'boolean')
+    // console.log(typeof { a: 1 } == 'object')
+    // console.log(typeof [1, 2, 4] === 'object')
+    // console.log(typeof new Date() === 'object')
+    // console.log(typeof undefined == 'undefined')
+    // console.log(typeof Symbol() == 'symbol')
+    // console.log(typeof function () {} === 'function')
+
+    var mediator = (function () {
+        return {
+            changed: function (obj) {
+                if (obj === passwordInput && !nameInput.value) {
+                    return alert('请先输入用户名')
+                }
+
+                if (obj === repeatPasswordInput && !passwordInput.value) {
+                    return alert('请先输入密码')
+                }
+
+                if (obj === ageInputInput && !sexInput.value) {
+                    return alert('请先选择性别')
+                }
+            },
+        }
+    })()
+    console.log(mediator)
+
+    console.log({
+        changed: function (obj) {
+            if (obj === passwordInput && !nameInput.value) {
+                return alert('请先输入用户名')
+            }
+
+            if (obj === repeatPasswordInput && !passwordInput.value) {
+                return alert('请先输入密码')
+            }
+
+            if (obj === ageInputInput && !sexInput.value) {
+                return alert('请先选择性别')
+            }
+        },
+    })
 })
+
 const tabbarRefresh = () => {
     workService.refreshPage(router.currentRoute.value.path)
 }

@@ -23,6 +23,7 @@ export default defineConfig({
     },
     // 服务配置
     server: {
+        // host: '0.0.0.0',
         port: 3001, // 端口号
         open: true, // 自动在浏览器打开
         https: false, // 是否开启 https
